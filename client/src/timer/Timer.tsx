@@ -1,13 +1,14 @@
 import React from "react"
-import Options from "./Options"
+import TimerOption from "./TimerOption"
 
 function Timer(props: { timerOptions: Array<number> }) {
-	const optionsProps = {
-		timerOptions: props.timerOptions
-	}
+	const optionComponents = props.timerOptions.map(option => <TimerOption 
+		chooseOption={props.chooseOption}
+		time={option}
+	/>)
 	return (
 		<div>
-			<Options {...optionsProps} />
+			{optionComponents}
 		</div>
 	)
 }
