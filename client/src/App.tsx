@@ -5,10 +5,10 @@ type myState = {
 	timerStatus: {
 		minutes: number,
 		pom: boolean,
-		isRunning: boolean
+		isRunning: boolean,
+		timerOptions: Array<number>,
+		participants: Array<string>,
 	},
-	timerOptions: Array<number>,
-	participants: Array<string>,
 	users: {
 		id: number,
 		name: string,
@@ -24,10 +24,10 @@ class App extends React.Component<unknown, myState> {
 			timerStatus: {
 				minutes: 420,
 				pom: true,
-				isRunning: false
+				isRunning: false,
+				timerOptions: [15, 25, 55, 90],
+				participants: [],
 			},
-			timerOptions: [15, 25, 55, 90],
-			participants: [],
 			users: []
 		}
 		this.chooseOption = this.chooseOption.bind(this)
@@ -36,13 +36,24 @@ class App extends React.Component<unknown, myState> {
 	chooseOption(event: any) {
 		event.preventDefault()
 		let newMinutes = event.target.textContent
-		this.setState({
-			timerStatus: {
-				minutes: newMinutes,
-				pom: true,
-				isRunning: true
-			}
-		})
+
+	}
+
+	// Calling the API. Top-level method.
+	callAPI() {
+		// fetch("http://localhost:9000/api")
+		let timerData
+		fetch("http://192.168.228.111:9000/api/timer")
+			.then(response => response.json())
+			.then(response => {
+				timerData = response.data
+				return timerData
+			})
+		console.log(timerData)
+	}
+
+	componentDidMount() {
+		this.callAPI()
 	}
 
 	render() {

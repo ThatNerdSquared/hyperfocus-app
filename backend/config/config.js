@@ -1,4 +1,4 @@
-{
+module.exports = {
   "development": {
     "username": "hyperfocus-app-dbuser",
     "password": "timer-sql-backend-7227",
