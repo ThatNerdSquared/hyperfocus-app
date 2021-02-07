@@ -3,23 +3,23 @@ module.exports = (sequelize, DataTypes) => {
 	let timerStatus = sequelize.define("timerStatus", {
 		minutes: {
 			allowNull: false,
-			type: Sequelize.INTEGER
+			type: DataTypes.INTEGER
 		},
 		pom: {
 			allowNull: false,
-			type: Sequelize.BOOLEAN
+			type: DataTypes.BOOLEAN
 		},
 		isRunning: {
 			allowNull: false,
-			type: Sequelize.BOOLEAN
+			type: DataTypes.BOOLEAN
 		},
 		timerOptions: {
 			allowNull: false,
-			type: Sequelize.ARRAY(Sequelize.INTEGER)
+			type: DataTypes.ARRAY(DataTypes.INTEGER)
 		},
 		participants: {
 			allowNull: false,
-			type: Sequelize.ARRAY(Sequelize.STRING)
+			type: DataTypes.ARRAY(DataTypes.STRING)
 		}
 	})
 	return timerStatus

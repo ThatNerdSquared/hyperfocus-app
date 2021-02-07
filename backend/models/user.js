@@ -1,23 +1,23 @@
 "use strict"
 module.exports = (sequelize, DataTypes) => {
-    let todo = sequelize.define("user", {
+    let user = sequelize.define("user", {
 		id: {
 			allowNull: false,
 			primaryKey: true,
-			type: Sequelize.UUID,
-			defaultValue: Sequelize.UUIDV4
+			type: DataTypes.UUID,
+			defaultValue: DataTypes.UUIDV4
 		},
 		name: {
 			allowNull: false,
-			type: Sequelize.STRING
+			type: DataTypes.STRING
 		},
 		totalPomsToday: {
 			allowNull: false,
-			type: Sequelize.INTEGER
+			type: DataTypes.INTEGER
 		},
 		isOnline: {
 			allowNull: false,
-			type: Sequelize.BOOLEAN
+			type: DataTypes.BOOLEAN
 		}
 	})
 	return user
