@@ -1,6 +1,10 @@
 import React from "react"
 import Timer from "./timer/Timer"
 
+// const backendURL = "http://192.168.228.111:9000/api/timer"
+const backendURL = "http://localhost:9000/api/timer"
+
+
 type myState = {
 	timerStatus: {
 		minutes: number,
@@ -22,34 +26,49 @@ class App extends React.Component<unknown, myState> {
 		super(props)
 		this.state = {
 			timerStatus: {
-				minutes: 420,
-				pom: true,
+				minutes: 10101,
+				pom: false,
 				isRunning: false,
-				timerOptions: [15, 25, 55, 90],
+				timerOptions: [],
 				participants: [],
 			},
 			users: []
 		}
-		this.chooseOption = this.chooseOption.bind(this)
+		this.callAPI = this.callAPI.bind(this)
+		this.startTimer = this.startTimer.bind(this)
 	}
 
-	chooseOption(event: any) {
+	async startTimer(event: any) {
 		event.preventDefault()
 		let newMinutes = event.target.textContent
-
+		console.log(event)
+		let data = {
+			minutes: newMinutes
+		}
+		let res = await fetch(backendURL, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(data),
+		})
+		console.log(res)
+		this.callAPI()
 	}
 
 	// Calling the API. Top-level method.
 	callAPI() {
-		// fetch("http://localhost:9000/api")
-		let timerData
-		fetch("http://192.168.228.111:9000/api/timer")
+		fetch(backendURL)
 			.then(response => response.json())
 			.then(response => {
-				timerData = response.data
-				return timerData
+				const data = response.data
+				console.log("apicall")
+				let timerData = data[0]
+				console.log(timerData)
+				this.setState({
+					timerStatus: timerData
+				})
 			})
-		console.log(timerData)
 	}
 
 	componentDidMount() {
@@ -60,8 +79,8 @@ class App extends React.Component<unknown, myState> {
 		return (
 			<div>
 				<Timer
-					timerOptions={this.state.timerOptions}
-					chooseOption={this.chooseOption}
+					timerOptions={this.state.timerStatus.timerOptions}
+					startTimer={this.startTimer}
 				/>
 				<h1>{this.state.timerStatus.minutes}</h1>
 			</div>

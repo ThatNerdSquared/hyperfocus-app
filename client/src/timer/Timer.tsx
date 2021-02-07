@@ -1,9 +1,9 @@
 import React from "react"
 import TimerOption from "./TimerOption"
 
-function Timer(props: { timerOptions: Array<number> }) {
+function Timer(props: { timerOptions: Array<number>, startTimer: Function }) {
 	const optionComponents = props.timerOptions.map(option => <TimerOption 
-		chooseOption={props.chooseOption}
+		startTimer={props.startTimer}
 		time={option}
 	/>)
 	return (
