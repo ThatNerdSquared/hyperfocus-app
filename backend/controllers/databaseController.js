@@ -39,3 +39,18 @@ exports.startPom = function(req, res, next) {
 		res.send("done")
 	})
 }
+
+exports.resumePom = function(req, res, next) {
+	res.set("Access-Control-Allow-Origin", "*") 
+	let data = req.body
+	return models.timerStatus.update({
+		isRunning: data.isRunning
+	}, {
+		where: {
+			id: data.id
+		}
+	}).then(timerStatus => {
+		console.log(timerStatus)
+		res.send("done")
+	})
+}

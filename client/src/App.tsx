@@ -1,8 +1,8 @@
 import React from "react"
 import Timer from "./timer/Timer"
 
-// const backendURL = "http://192.168.228.111:9000/api/timer"
-const backendURL = "http://localhost:9000/api/timer"
+// const backendURL = "http://192.168.228.111:9000/api/"
+const backendURL = "http://localhost:9000/api/"
 
 
 type myState = {
@@ -40,6 +40,7 @@ class App extends React.Component<unknown, myState> {
 		}
 		this.callAPI = this.callAPI.bind(this)
 		this.startTimer = this.startTimer.bind(this)
+		this.toggleRunning = this.toggleRunning.bind(this)
 	}
 
 	async startTimer(event: any) {
@@ -50,7 +51,7 @@ class App extends React.Component<unknown, myState> {
 			id: id,
 			minutes: newMinutes,
 		}
-		let res = await fetch(backendURL, {
+		let res = await fetch(`${backendURL}timer`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -63,7 +64,7 @@ class App extends React.Component<unknown, myState> {
 
 	// Calling the API. Top-level method.
 	callAPI() {
-		fetch(backendURL)
+		fetch(`${backendURL}timer`)
 			.then(response => response.json())
 			.then(response => {
 				const data = response.data
@@ -80,6 +81,26 @@ class App extends React.Component<unknown, myState> {
 		this.callAPI()
 	}
 
+	async toggleRunning(event: any) {
+		event.preventDefault()
+		let newRunning
+		this.state.timerStatus.isRunning === true ? newRunning = false : newRunning = true
+		let id = event.target.id
+		let data = {
+			id: id,
+			isRunning: newRunning,
+		}
+		let res = await fetch(`${backendURL}timer/resumepom`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(data),
+		})
+		console.log(res)
+		this.callAPI()
+	}
+
 	render() {
 		function numDigits(x: number) {
 			return Math.max(Math.floor(Math.log10(Math.abs(x))), 0) + 1;
@@ -87,16 +108,20 @@ class App extends React.Component<unknown, myState> {
 		let status = this.state.timerStatus
 		let minutes
 		let seconds
+		let statusText
 		numDigits(status.minutes) <= 1 ? minutes = `0${status.minutes}` : minutes = status.minutes
 		numDigits(status.seconds) <= 1 ? seconds = `0${status.seconds}` : seconds = status.seconds
+		this.state.timerStatus.isRunning === true ? statusText = "true" : statusText = "false"
 		return (
 			<div>
 				<Timer
 					timerOptions={status.timerOptions}
 					id={status.id}
 					startTimer={this.startTimer}
+					toggleRunning={this.toggleRunning}
 				/>
 				<h1>{`${minutes}:${seconds}`}</h1>
+				<p>Status: {statusText}</p>
 			</div>
 		)
 	}
