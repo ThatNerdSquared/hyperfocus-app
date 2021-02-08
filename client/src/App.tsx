@@ -81,14 +81,22 @@ class App extends React.Component<unknown, myState> {
 	}
 
 	render() {
+		function numDigits(x: number) {
+			return Math.max(Math.floor(Math.log10(Math.abs(x))), 0) + 1;
+		}
+		let status = this.state.timerStatus
+		let minutes
+		let seconds
+		numDigits(status.minutes) <= 1 ? minutes = `0${status.minutes}` : minutes = status.minutes
+		numDigits(status.seconds) <= 1 ? seconds = `0${status.seconds}` : seconds = status.seconds
 		return (
 			<div>
 				<Timer
-					timerOptions={this.state.timerStatus.timerOptions}
-					id={this.state.timerStatus.id}
+					timerOptions={status.timerOptions}
+					id={status.id}
 					startTimer={this.startTimer}
 				/>
-				<h1>{`${this.state.timerStatus.minutes}:${this.state.timerStatus.seconds}`}</h1>
+				<h1>{`${minutes}:${seconds}`}</h1>
 			</div>
 		)
 	}
