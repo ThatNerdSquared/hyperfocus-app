@@ -5,18 +5,18 @@ exports.getTimerStatus = function(req, res, next) {
 	return models.timerStatus.findAll().then(timerStatus => {
 		if (timerStatus == "") {
 			return models.timerStatus.create({
+				id: 42,
 				minutes: 420,
+				seconds: 69,
 				pom: false,
 				isRunning: false,
 				timerOptions: [15, 25, 50, 90],
 				participants: []
 			}).then(timerStatus => {
-				console.log(timerStatus)
 				res.send(JSON.stringify({ data: timerStatus }))
 			})
 		}
 		else {
-			console.log(timerStatus)
 			return res.send(JSON.stringify({ data: timerStatus }))
 		}
 	})
@@ -27,11 +27,12 @@ exports.startPom = function(req, res, next) {
 	let data = req.body
 	return models.timerStatus.update({
 		minutes: data.minutes,
+		seconds: 0,
 		pom: true,
 		isRunning: true
 	}, {
 		where: {
-			id: 1
+			id: data.id
 		}
 	}).then(timerStatus => {
 		console.log(timerStatus)

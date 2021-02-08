@@ -7,7 +7,9 @@ const backendURL = "http://localhost:9000/api/timer"
 
 type myState = {
 	timerStatus: {
+		id: number,
 		minutes: number,
+		seconds: number,
 		pom: boolean,
 		isRunning: boolean,
 		timerOptions: Array<number>,
@@ -26,7 +28,9 @@ class App extends React.Component<unknown, myState> {
 		super(props)
 		this.state = {
 			timerStatus: {
+				id: 27,
 				minutes: 10101,
+				seconds: 42,
 				pom: false,
 				isRunning: false,
 				timerOptions: [],
@@ -41,9 +45,10 @@ class App extends React.Component<unknown, myState> {
 	async startTimer(event: any) {
 		event.preventDefault()
 		let newMinutes = event.target.textContent
-		console.log(event)
+		let id = event.target.id
 		let data = {
-			minutes: newMinutes
+			id: id,
+			minutes: newMinutes,
 		}
 		let res = await fetch(backendURL, {
 			method: "POST",
@@ -80,9 +85,10 @@ class App extends React.Component<unknown, myState> {
 			<div>
 				<Timer
 					timerOptions={this.state.timerStatus.timerOptions}
+					id={this.state.timerStatus.id}
 					startTimer={this.startTimer}
 				/>
-				<h1>{this.state.timerStatus.minutes}</h1>
+				<h1>{`${this.state.timerStatus.minutes}:${this.state.timerStatus.seconds}`}</h1>
 			</div>
 		)
 	}

@@ -5,6 +5,7 @@ function TimerOption(props) {
 		<div>
 			<form
 				minutes={props.time}
+				id={props.id}
 				onSubmit={props.startTimer}
 			>
 				<button>{props.time}</button>

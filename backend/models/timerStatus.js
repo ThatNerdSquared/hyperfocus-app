@@ -5,6 +5,10 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			type: DataTypes.INTEGER
 		},
+		seconds: {
+			allowNull: false,
+			type: DataTypes.INTEGER
+		},
 		pom: {
 			allowNull: false,
 			type: DataTypes.BOOLEAN
