@@ -15,6 +15,7 @@ type myState = {
 		seconds: number,
 		pom: boolean,
 		isRunning: boolean,
+		isIntervalSet: boolean,
 		timerOptions: Array<number>,
 		participants: Array<string>,
 	},
@@ -36,12 +37,12 @@ class App extends React.Component<unknown, myState> {
 				seconds: 42,
 				pom: false,
 				isRunning: false,
+				isIntervalSet: false,
 				timerOptions: [],
 				participants: [],
 			},
 			users: []
 		}
-		// this.callAPI = this.callAPI.bind(this)
 		this.startTimer = this.startTimer.bind(this)
 		this.toggleRunning = this.toggleRunning.bind(this)
 		this.handleNewStatus = this.handleNewStatus.bind(this)
@@ -55,38 +56,16 @@ class App extends React.Component<unknown, myState> {
 			id: id,
 			minutes: newMinutes,
 		}
-		// let res = await fetch(`${backendURL}timer`, {
-		// 	method: "POST",
-		// 	headers: {
-		// 		"Content-Type": "application/json"
-		// 	},
-		// 	body: JSON.stringify(data),
-		// })
-		// console.log(res)
 		socket.emit("startTimer", data)
-		// this.callAPI()
+		socket.emit("beginTickTock", id)
 	}
-
-	// Calling the API. Top-level method.
-	// callAPI() {
-	// 	fetch(`${backendURL}timer`)
-	// 		.then(response => response.json())
-	// 		.then(response => {
-	// 			const data = response.data
-	// 			console.log("apicall")
-	// 			let timerData = data[0]
-	// 			console.log(timerData)
-	// 			this.setState({
-	// 				timerStatus: timerData
-	// 			})
-	// 		})
-	// }
 
 	componentDidMount() {
 		socket.emit("join")
 		socket.on("connectionData", this.handleNewStatus)
 		socket.on("timerStarted", this.handleNewStatus)
 		socket.on("timerToggled", this.handleNewStatus)
+		socket.on("timerGoTickTock", this.handleNewStatus)
 	}
 
 	handleNewStatus(data: any) {
@@ -108,16 +87,7 @@ class App extends React.Component<unknown, myState> {
 			id: id,
 			isRunning: newRunning,
 		}
-		// let res = await fetch(`${backendURL}timer/resumepom`, {
-		// 	method: "POST",
-		// 	headers: {
-		// 		"Content-Type": "application/json"
-		// 	},
-		// 	body: JSON.stringify(data),
-		// })
-		// console.log(res)
 		socket.emit("toggleTimer", data)
-		// this.callAPI()
 	}
 
 	render() {

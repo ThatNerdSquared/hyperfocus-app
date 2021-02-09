@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			type: DataTypes.BOOLEAN
 		},
+		isIntervalSet: {
+			allowNull: false,
+			type: DataTypes.BOOLEAN
+		},
 		timerOptions: {
 			allowNull: false,
 			type: DataTypes.ARRAY(DataTypes.INTEGER)

@@ -43,8 +43,19 @@ io.on("connection", socket => {
 				seconds: 69,
 				pom: false,
 				isRunning: false,
+				isIntervalSet: false,
 				timerOptions: [15, 25, 50, 90],
 				participants: []
+			})
+		}
+		else {
+			await models.timerStatus.update({
+				isRunning: false,
+				isIntervalSet: false
+			}, {
+				where: {
+					isRunning: true 
+				}
 			})
 		}
 /* 		let users = await models.users.findAll()
@@ -65,9 +76,62 @@ io.on("connection", socket => {
 		timerStatus = await models.timerStatus.findAll()
 		// io.emit("data", { timerStatus: timerStatus, users: users})
 		io.emit("connectionData", { timerStatus: timerStatus })
+		
+	})
+	socket.on("beginTickTock", async(id) => {
+		const data = await models.timerStatus.findAll()
+		if (data[0].dataValues.isIntervalSet === true) {
+			return
+		}
+		else {
+			const timerGoTickTock = setInterval(async () => {
+				const intervalSet = await models.timerStatus.update({
+					isIntervalSet: true
+				}, {
+					where: {
+						id: id
+					}
+				})
+				const newData = await models.timerStatus.findAll()
+				io.emit("connectionData", { timerStatus: newData })
+				const check = await models.timerStatus.findAll({
+					where: {
+						isRunning: false
+					}
+				})
+				if (check == "") {
+					const rawData = await models.timerStatus.findAll()
+					const data = rawData[0].dataValues
+					let min = data.minutes
+					let sec = data.seconds
+					let id = data.id
+					console.log({ min, sec })
+					let finalMin
+					let finalSec
+					if (sec-1 < 0) {
+						finalSec = 59
+						finalMin = min - 1
+					}
+					else {
+						finalSec = sec - 1
+						finalMin = min
+					}
+					const newData = await models.timerStatus.update({
+						minutes: finalMin,
+						seconds: finalSec
+					}, {
+						where: {
+							id: id
+						}
+					})
+					const newStatus = await models.timerStatus.findAll()
+					io.emit("timerGoTickTock", { timerStatus: newStatus })
+				}
+			}, 1000);
+		}
 	})
 	socket.on("startTimer", async data => {
-		const { minutes, id } = data
+		const { minutes, id} = data
 		const newData = await models.timerStatus.update({
 			minutes: minutes,
 			seconds: 0,
@@ -80,6 +144,7 @@ io.on("connection", socket => {
 		})
 		const newStatus = await models.timerStatus.findAll()
 		io.emit("timerStarted", { timerStatus: newStatus })
+
 	})
 	socket.on("toggleTimer", async signal => {
 		const { isRunning, id } = signal
@@ -90,7 +155,6 @@ io.on("connection", socket => {
 				id: id
 			}
 		})
-		console.log("yeet")
 		const newStatus = await models.timerStatus.findAll()
 		io.emit("timerToggled", { timerStatus: newStatus })
 	})
