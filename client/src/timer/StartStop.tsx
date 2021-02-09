@@ -1,6 +1,6 @@
 import React from "react"
 
-function StartStop(props) {
+function StartStop(props: any) {
 	return (
 		<div>
 			<form

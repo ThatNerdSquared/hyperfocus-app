@@ -2,7 +2,7 @@ import React from "react"
 import StartStop from "./StartStop"
 import TimerOption from "./TimerOption"
 
-function Timer(props: { timerOptions: Array<number>, startTimer: Function, id: number }) {
+function Timer(props: { timerOptions: Array<number>, startTimer: Function, id: number, toggleRunning: Function }) {
 	const optionComponents = props.timerOptions.map(option => <TimerOption 
 		startTimer={props.startTimer}
 		id={props.id}

@@ -1,6 +1,6 @@
 import React from "react"
 
-function TimerOption(props) {
+function TimerOption(props: any) {
 	return (
 		<div>
 			<form
