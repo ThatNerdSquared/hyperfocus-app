@@ -3,8 +3,8 @@ import Timer from "./timer/Timer"
 import io from "socket.io-client"
 
 // const backendURL = "http://192.168.228.111:9000/api/"
-// const backendURL = "http://localhost:9000/api/"
-const backendURL = "http://192.168.228.111:9000"
+const backendURL = "http://localhost:9000/"
+// const backendURL = "http://192.168.228.111:9000"
 const socket = io(backendURL)
 
 
@@ -24,7 +24,8 @@ type myState = {
 		name: string,
 		totalPomsToday: number,
 		isOnline: boolean
-	}[]
+	}[],
+	newOption: string
 }
 
 class App extends React.Component<unknown, myState> {
@@ -41,11 +42,20 @@ class App extends React.Component<unknown, myState> {
 				timerOptions: [],
 				participants: [],
 			},
-			users: []
+			users: [],
+			newOption: ""
 		}
 		this.startTimer = this.startTimer.bind(this)
 		this.toggleRunning = this.toggleRunning.bind(this)
 		this.handleNewStatus = this.handleNewStatus.bind(this)
+		this.formChange = this.formChange.bind(this)
+		this.handleAddOption = this.handleAddOption.bind(this)
+	}
+	
+	formChange(event: any) {
+		const name = event.target.name
+		const value = event.target.value
+		this.setState({ [name]: value })
 	}
 
 	async startTimer(event: any) {
@@ -66,22 +76,34 @@ class App extends React.Component<unknown, myState> {
 		socket.on("timerStarted", this.handleNewStatus)
 		socket.on("timerToggled", this.handleNewStatus)
 		socket.on("timerGoTickTock", this.handleNewStatus)
+		socket.on("optionAdded", this.handleNewStatus)
 	}
 
 	handleNewStatus(data: any) {
 		const dataArray = data.timerStatus
 		const newStatus = dataArray[0]
-		console.log(newStatus)
 		this.setState({
 			timerStatus: newStatus
 		})
+	}
+
+	handleAddOption(event: any) {
+		event.preventDefault()
+		let id = this.state.timerStatus.id
+		let option = this.state.newOption
+		let newOption = parseInt(option)
+		let data = {
+			id: id,
+			option: newOption
+		}
+		console.log(data)
+		socket.emit("addOption", data)
 	}
 
 	async toggleRunning(event: any) {
 		event.preventDefault()
 		let newRunning
 		this.state.timerStatus.isRunning === true ? newRunning = false : newRunning = true
-		console.log(newRunning)
 		let id = event.target.id
 		let data = {
 			id: id,
@@ -108,6 +130,9 @@ class App extends React.Component<unknown, myState> {
 					id={status.id}
 					startTimer={this.startTimer}
 					toggleRunning={this.toggleRunning}
+					formChange={this.formChange}
+					newOption={this.state.newOption}
+					handleAddOption={this.handleAddOption}
 				/>
 				<h1>{`${minutes}:${seconds}`}</h1>
 				<p>Status: {statusText}</p>
