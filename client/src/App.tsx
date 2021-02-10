@@ -5,8 +5,8 @@ import LoginScreen from "./LoginScreen"
 import ParticipantsList from "./participants/ParticipantsList"
 
 // const backendURL = "http://192.168.228.111:9000/api/"
-// const backendURL = "http://localhost:9000/"
-const backendURL = "http://192.168.228.111:9000"
+const backendURL = "http://localhost:9000/"
+// const backendURL = "http://192.168.228.111:9000"
 const socket = io(backendURL)
 
 
