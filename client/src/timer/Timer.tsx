@@ -11,7 +11,8 @@ function Timer(props: {
 	formChange: Function 
 	newOption: string,
 	handleAddOption: Function,
-	handleDeleteOption: Function
+	handleDeleteOption: Function,
+	isRunning: boolean
 }) {
 	const optionComponents = props.timerOptions.map(option => <TimerOption 
 		startTimer={props.startTimer}
@@ -20,12 +21,13 @@ function Timer(props: {
 		handleDeleteOption={props.handleDeleteOption}
 	/>)
 	return (
-		<div>
-			{optionComponents}
+		<div className="app">
 			<StartStop
 				id={props.id}
 				toggleRunning={props.toggleRunning}
+				isRunning={props.isRunning}
 			/>
+			<div className="options">{optionComponents}</div>
 			<AddCustomOption
 				newOption={props.newOption}
 				formChange={props.formChange}

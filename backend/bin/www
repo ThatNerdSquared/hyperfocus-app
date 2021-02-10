@@ -128,14 +128,13 @@ io.on("connection", socket => {
 						const newData = await models.timerStatus.update({
 							minutes: 0,
 							seconds: 0,
-							pom: false,
 							isRunning: false,
 						}, {
 							where: {
 								id: id
 							}
 						})
-						clearInterval(timerGoTickTock)
+						// clearInterval(timerGoTickTock)
 						const newStatus = await models.timerStatus.findAll()
 						io.emit("timerGoTickTock", { timerStatus: newStatus, pomDone: true })
 					}
@@ -164,11 +163,13 @@ io.on("connection", socket => {
 		}
 	})
 	socket.on("startTimer", async data => {
-		const { minutes, id} = data
+		const { minutes, id, pom } = data
+		let newPom
+		pom === true ? newPom = false : newPom = true
 		const newData = await models.timerStatus.update({
 			minutes: minutes,
 			seconds: 0,
-			pom: true,
+			pom: newPom,
 			isRunning: true
 		}, {
 			where: {

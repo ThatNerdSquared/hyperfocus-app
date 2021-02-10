@@ -1,13 +1,15 @@
 import React from "react"
 
 function StartStop(props: any) {
+	let buttonText
+	props.isRunning === true ? buttonText = "Pause" : buttonText = "Resume"
 	return (
-		<div>
+		<div className="startstop">
 			<form
 				id={props.id}
 				onSubmit={props.toggleRunning}
 			>
-				<button>Start/Stop</button>
+				<button className="startstop-button">{buttonText}</button>
 			</form>
 		</div>
 	)

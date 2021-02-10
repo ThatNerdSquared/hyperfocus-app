@@ -2,20 +2,20 @@ import React from "react"
 
 function TimerOption(props: any) {
 	return (
-		<div>
+		<div className="single-option">
 			<form
-				minutes={props.time}
+				name={props.time}
 				id={props.id}
 				onSubmit={props.startTimer}
 			>
-				<button>{props.time}</button>
+				<button className="option-button">{props.time}</button>
 			</form>
 			<form
 				name={props.time}
 				id={props.id}
 				onSubmit={props.handleDeleteOption}
 			>
-				<button>Delete</button>
+				<button className="option-delete">Delete</button>
 			</form>
 		</div>
 	)

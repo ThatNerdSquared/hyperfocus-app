@@ -80,11 +80,13 @@ class App extends React.Component<unknown, myState> {
 
 	async startTimer(event: any) {
 		event.preventDefault()
-		let newMinutes = event.target.textContent
+		let newMinutes = event.target.name
 		let id = event.target.id
+		let pom = this.state.timerStatus.pom
 		let data = {
 			id: id,
 			minutes: newMinutes,
+			pom: pom
 		}
 		socket.emit("startTimer", data)
 		socket.emit("beginTickTock", id)
@@ -207,26 +209,39 @@ class App extends React.Component<unknown, myState> {
 			let minutes
 			let seconds
 			let statusText
+			let pomText
 			numDigits(status.minutes) <= 1 ? minutes = `0${status.minutes}` : minutes = status.minutes
 			numDigits(status.seconds) <= 1 ? seconds = `0${status.seconds}` : seconds = status.seconds
-			this.state.timerStatus.isRunning === true ? statusText = "true" : statusText = "false"
+			this.state.timerStatus.isRunning === true ? statusText = "In Progress" : statusText = "Paused"
+			this.state.timerStatus.pom === true ? pomText = "Work Session" : pomText = "Break Time"
 			return (
-				<div>
-					<Timer
-						timerOptions={status.timerOptions}
-						id={status.id}
-						startTimer={this.startTimer}
-						toggleRunning={this.toggleRunning}
-						formChange={this.formChange}
-						newOption={this.state.newOption}
-						handleAddOption={this.handleAddOption}
-						handleDeleteOption={this.handleDeleteOption}
-					/>
-					<h1>{`${minutes}:${seconds}`}</h1>
-					<p>Status: {statusText}</p>
-					<ParticipantsList
-						users={this.state.users}
-					/>
+				<div className="app">
+					<div className="header">
+						<h1>{pomText}</h1>
+					</div>
+					<div className="header">
+						<h1>{`${minutes}:${seconds}`}</h1>
+					</div>
+					<div className="panes">
+						<div>
+							<Timer
+								timerOptions={status.timerOptions}
+								id={status.id}
+								startTimer={this.startTimer}
+								toggleRunning={this.toggleRunning}
+								formChange={this.formChange}
+								newOption={this.state.newOption}
+								handleAddOption={this.handleAddOption}
+								handleDeleteOption={this.handleDeleteOption}
+								isRunning={this.state.timerStatus.isRunning}
+							/>
+						</div>
+						<div>
+							<ParticipantsList
+								users={this.state.users}
+							/>
+						</div>
+					</div>
 				</div>
 			)
 		}
