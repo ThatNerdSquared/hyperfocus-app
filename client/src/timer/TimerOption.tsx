@@ -10,6 +10,13 @@ function TimerOption(props: any) {
 			>
 				<button>{props.time}</button>
 			</form>
+			<form
+				name={props.time}
+				id={props.id}
+				onSubmit={props.handleDeleteOption}
+			>
+				<button>Delete</button>
+			</form>
 		</div>
 	)
 }

@@ -3,8 +3,8 @@ import Timer from "./timer/Timer"
 import io from "socket.io-client"
 
 // const backendURL = "http://192.168.228.111:9000/api/"
-const backendURL = "http://localhost:9000/"
-// const backendURL = "http://192.168.228.111:9000"
+// const backendURL = "http://localhost:9000/"
+const backendURL = "http://192.168.228.111:9000"
 const socket = io(backendURL)
 
 
@@ -77,6 +77,13 @@ class App extends React.Component<unknown, myState> {
 		socket.on("timerToggled", this.handleNewStatus)
 		socket.on("timerGoTickTock", this.handleNewStatus)
 		socket.on("optionAdded", this.handleNewStatus)
+		socket.on("optionDeleted", this.handleNewStatus)
+		if (!("Notification" in window)) {
+			console.log("This browser does not support desktop notification");
+		}
+		else {
+			console.log("Notifications are supported");
+		}
 	}
 
 	handleNewStatus(data: any) {
@@ -85,6 +92,10 @@ class App extends React.Component<unknown, myState> {
 		this.setState({
 			timerStatus: newStatus
 		})
+		if (data.pomDone === true) {
+			alert("Your work session has finished!")
+			// new Notification("Your work session is complete!")
+		}
 	}
 
 	handleAddOption(event: any) {
@@ -98,6 +109,22 @@ class App extends React.Component<unknown, myState> {
 		}
 		console.log(data)
 		socket.emit("addOption", data)
+		this.setState({
+			newOption: ""
+		})
+	}
+
+	handleDeleteOption(event: any) {
+		event.preventDefault()
+		console.log(event)
+		let id = event.target.id
+		let option = event.target.name
+		let data = {
+			id: id,
+			option: option
+		}
+		console.log(data)
+		socket.emit("deleteOption", data)
 	}
 
 	async toggleRunning(event: any) {
@@ -133,6 +160,7 @@ class App extends React.Component<unknown, myState> {
 					formChange={this.formChange}
 					newOption={this.state.newOption}
 					handleAddOption={this.handleAddOption}
+					handleDeleteOption={this.handleDeleteOption}
 				/>
 				<h1>{`${minutes}:${seconds}`}</h1>
 				<p>Status: {statusText}</p>

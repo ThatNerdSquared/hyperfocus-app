@@ -10,12 +10,14 @@ function Timer(props: {
 	toggleRunning: Function,
 	formChange: Function 
 	newOption: string,
-	handleAddOption: Function
+	handleAddOption: Function,
+	handleDeleteOption: Function
 }) {
 	const optionComponents = props.timerOptions.map(option => <TimerOption 
 		startTimer={props.startTimer}
 		id={props.id}
 		time={option}
+		handleDeleteOption={props.handleDeleteOption}
 	/>)
 	return (
 		<div>
