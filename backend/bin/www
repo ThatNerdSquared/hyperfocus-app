@@ -37,7 +37,7 @@ io.on("connection", socket => {
 	socket.on("join", async username => {
 		let timerStatus = await models.timerStatus.findAll()
 		if (timerStatus == "") {
-			models.timerStatus.create({
+			await models.timerStatus.create({
 				id: 42,
 				minutes: 420,
 				seconds: 69,
@@ -49,34 +49,53 @@ io.on("connection", socket => {
 			})
 		}
 		else {
-			await models.timerStatus.update({
-				isRunning: false,
-				isIntervalSet: false
-			}, {
+			const checkPeople = await models.user.findAll({
 				where: {
-					isRunning: true 
+					isOnline: true
 				}
 			})
+			if (checkPeople == "") {
+				await models.timerStatus.update({
+					isRunning: false,
+					isIntervalSet: false
+				}, {
+					where: {
+						isRunning: true 
+					}
+				})
+			}
 		}
-/* 		let users = await models.users.findAll()
+		let users = await models.user.findAll()
 		let checkCurrentUser = await models.user.findAll({
 			where: {
 				name: username
 			}
 		})
-		if (checkCurrentUser === "") {
-			models.user.create({
-				id: 1,
+		if (checkCurrentUser == "") {
+			await models.user.create({
 				name: username,
 				totalPomsToday: 0,
 				isOnline: true
 			})
 		}
-		users = await models.users.findAll() */
+		else {
+			await models.user.update({
+				isOnline: true
+			}, {
+				where: {
+					name: username
+				}
+			})
+		}
+		users = await models.user.findAll()
 		timerStatus = await models.timerStatus.findAll()
-		// io.emit("data", { timerStatus: timerStatus, users: users})
-		io.emit("connectionData", { timerStatus: timerStatus })
-		
+		let currentUser = await models.user.findAll({
+			where: {
+				name: username
+			}
+		})
+		io.emit("connectionData", { timerStatus: timerStatus, isLoggedIn: true, users: users })
+		io.to(socket.id).emit("private", { currentUser: currentUser });
 	})
 	socket.on("beginTickTock", async(id) => {
 		const data = await models.timerStatus.findAll()
@@ -211,7 +230,21 @@ io.on("connection", socket => {
 		const newStatus = await models.timerStatus.findAll()
 		io.emit("optionDeleted", { timerStatus: newStatus })
 	})
+	socket.on("logMeOut", async user => {
+		const { id, name, totalPomsToday, isOnline } = user
+		const userID = user[0].id
+		const logOutUser = await models.user.update({
+			isOnline: false
+		}, {
+			where: {
+				id: userID
+			}
+		})
+		const newUsers = await models.user.findAll()
+		io.emit("userLoggedOut", { users: newUsers })
+	})
 })
+
 
 /**
  * Listen on provided port, on all network interfaces.

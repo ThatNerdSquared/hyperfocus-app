@@ -1,6 +1,8 @@
 import React from "react"
 import Timer from "./timer/Timer"
 import io from "socket.io-client"
+import LoginScreen from "./LoginScreen"
+import ParticipantsList from "./participants/ParticipantsList"
 
 // const backendURL = "http://192.168.228.111:9000/api/"
 // const backendURL = "http://localhost:9000/"
@@ -25,7 +27,15 @@ type myState = {
 		totalPomsToday: number,
 		isOnline: boolean
 	}[],
-	newOption: string
+	isLoggedIn: boolean,
+	newOption: string,
+	loginName: string
+	currentUser: {
+		id: number,
+		name: string,
+		totalPomsToday: number,
+		isOnline: boolean
+	}
 }
 
 class App extends React.Component<unknown, myState> {
@@ -43,13 +53,23 @@ class App extends React.Component<unknown, myState> {
 				participants: [],
 			},
 			users: [],
-			newOption: ""
+			isLoggedIn: false,
+			newOption: "",
+			loginName: "",
+			currentUser: {
+				name: "Guest",
+				totalPomsToday: 0,
+				isOnline: true
+			}
 		}
 		this.startTimer = this.startTimer.bind(this)
 		this.toggleRunning = this.toggleRunning.bind(this)
 		this.handleNewStatus = this.handleNewStatus.bind(this)
 		this.formChange = this.formChange.bind(this)
 		this.handleAddOption = this.handleAddOption.bind(this)
+		this.logMeIn = this.logMeIn.bind(this)
+		this.logMeOut = this.logMeOut.bind(this)
+		this.setupBeforeUnloadListener = this.setupBeforeUnloadListener.bind(this)
 	}
 	
 	formChange(event: any) {
@@ -70,14 +90,32 @@ class App extends React.Component<unknown, myState> {
 		socket.emit("beginTickTock", id)
 	}
 
+	// Setup the `beforeunload` event listener
+	setupBeforeUnloadListener() {
+		window.addEventListener("beforeunload", (event) => {
+			event.preventDefault();
+			return this.logMeOut()
+		});
+	};
+
 	componentDidMount() {
-		socket.emit("join")
+		this.setState({
+			isLoggedIn: false
+		})
+	}
+	
+	logMeIn(event: any) {
+		event.preventDefault()
+		socket.emit("join", this.state.loginName)
+		this.setupBeforeUnloadListener()
 		socket.on("connectionData", this.handleNewStatus)
 		socket.on("timerStarted", this.handleNewStatus)
 		socket.on("timerToggled", this.handleNewStatus)
 		socket.on("timerGoTickTock", this.handleNewStatus)
 		socket.on("optionAdded", this.handleNewStatus)
 		socket.on("optionDeleted", this.handleNewStatus)
+		socket.on("userLoggedOut", this.handleNewStatus)
+		socket.on("private", this.handleNewStatus)
 		if (!("Notification" in window)) {
 			console.log("This browser does not support desktop notification");
 		}
@@ -86,15 +124,38 @@ class App extends React.Component<unknown, myState> {
 		}
 	}
 
+	logMeOut() {
+		socket.emit("logMeOut", this.state.currentUser)
+	}
+
 	handleNewStatus(data: any) {
-		const dataArray = data.timerStatus
-		const newStatus = dataArray[0]
-		this.setState({
-			timerStatus: newStatus
-		})
+		if (data.timerStatus != null) {
+			let dataArray = data.timerStatus
+			let newStatus = dataArray[0]
+			this.setState({
+				timerStatus: newStatus
+			})
+		}
 		if (data.pomDone === true) {
 			alert("Your work session has finished!")
 			// new Notification("Your work session is complete!")
+		}
+		if (data.users != null) {
+			let users = data.users
+			this.setState({
+				users: users
+			})
+		}
+		if (data.currentUser != null) {
+			let currentUser = data.currentUser
+			this.setState({
+				currentUser: currentUser
+			})
+		}
+		if (data.isLoggedIn === true) {
+			this.setState({
+				isLoggedIn: true
+			})
 		}
 	}
 
@@ -107,7 +168,6 @@ class App extends React.Component<unknown, myState> {
 			id: id,
 			option: newOption
 		}
-		console.log(data)
 		socket.emit("addOption", data)
 		this.setState({
 			newOption: ""
@@ -123,7 +183,6 @@ class App extends React.Component<unknown, myState> {
 			id: id,
 			option: option
 		}
-		console.log(data)
 		socket.emit("deleteOption", data)
 	}
 
@@ -140,32 +199,48 @@ class App extends React.Component<unknown, myState> {
 	}
 
 	render() {
-		function numDigits(x: number) {
-			return Math.max(Math.floor(Math.log10(Math.abs(x))), 0) + 1;
+		if (this.state.isLoggedIn) {
+			function numDigits(x: number) {
+				return Math.max(Math.floor(Math.log10(Math.abs(x))), 0) + 1;
+			}
+			let status = this.state.timerStatus
+			let minutes
+			let seconds
+			let statusText
+			numDigits(status.minutes) <= 1 ? minutes = `0${status.minutes}` : minutes = status.minutes
+			numDigits(status.seconds) <= 1 ? seconds = `0${status.seconds}` : seconds = status.seconds
+			this.state.timerStatus.isRunning === true ? statusText = "true" : statusText = "false"
+			return (
+				<div>
+					<Timer
+						timerOptions={status.timerOptions}
+						id={status.id}
+						startTimer={this.startTimer}
+						toggleRunning={this.toggleRunning}
+						formChange={this.formChange}
+						newOption={this.state.newOption}
+						handleAddOption={this.handleAddOption}
+						handleDeleteOption={this.handleDeleteOption}
+					/>
+					<h1>{`${minutes}:${seconds}`}</h1>
+					<p>Status: {statusText}</p>
+					<ParticipantsList
+						users={this.state.users}
+					/>
+				</div>
+			)
 		}
-		let status = this.state.timerStatus
-		let minutes
-		let seconds
-		let statusText
-		numDigits(status.minutes) <= 1 ? minutes = `0${status.minutes}` : minutes = status.minutes
-		numDigits(status.seconds) <= 1 ? seconds = `0${status.seconds}` : seconds = status.seconds
-		this.state.timerStatus.isRunning === true ? statusText = "true" : statusText = "false"
-		return (
-			<div>
-				<Timer
-					timerOptions={status.timerOptions}
-					id={status.id}
-					startTimer={this.startTimer}
-					toggleRunning={this.toggleRunning}
-					formChange={this.formChange}
-					newOption={this.state.newOption}
-					handleAddOption={this.handleAddOption}
-					handleDeleteOption={this.handleDeleteOption}
-				/>
-				<h1>{`${minutes}:${seconds}`}</h1>
-				<p>Status: {statusText}</p>
-			</div>
-		)
+		else {
+			return (
+				<div>
+					<LoginScreen
+						logMeIn={this.logMeIn}
+						formChange={this.formChange}
+						loginName={this.state.loginName}
+					/>
+				</div>
+			)
+		}
 	}
 }
 

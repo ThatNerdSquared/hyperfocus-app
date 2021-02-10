@@ -1,6 +1,6 @@
 import React from "react"
 
-function AddCustomOption(props) {
+function AddCustomOption(props: any) {
 	return (
 		<div>
 			<form onSubmit={props.handleAddOption}>
