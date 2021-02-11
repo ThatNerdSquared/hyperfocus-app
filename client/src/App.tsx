@@ -4,16 +4,8 @@ import io from "socket.io-client"
 import LoginScreen from "./LoginScreen"
 import ParticipantsList from "./participants/ParticipantsList"
 
-// const backendURL = "http://192.168.228.111:9000/api/"
-// const backendURL = "http://localhost:9000/"
-// const backendURL = "http://192.168.228.111:9000"
-let backendURL
-if (process.env.NODE_ENV === 'development') {
-	backendURL ='http://localhost:9000/';
-}
-else {
-	backendURL = "/api"
-}
+// Uncomment the below for dev.
+// const socket = io("http://localhost:9000")
 const socket = io()
 
 
@@ -173,14 +165,20 @@ class App extends React.Component<unknown, myState> {
 		let id = this.state.timerStatus.id
 		let option = this.state.newOption
 		let newOption = parseInt(option)
-		let data = {
-			id: id,
-			option: newOption
+		console.log(newOption)
+		if (isNaN(newOption)) {
+			return
 		}
-		socket.emit("addOption", data)
-		this.setState({
-			newOption: ""
-		})
+		else {
+			let data = {
+				id: id,
+				option: newOption
+			}
+			socket.emit("addOption", data)
+			this.setState({
+				newOption: ""
+			})
+		}
 	}
 
 	handleDeleteOption(event: any) {

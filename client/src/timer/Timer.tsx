@@ -14,12 +14,24 @@ function Timer(props: {
 	handleDeleteOption: Function,
 	isRunning: boolean
 }) {
-	const optionComponents = props.timerOptions.map(option => <TimerOption 
-		startTimer={props.startTimer}
-		id={props.id}
-		time={option}
-		handleDeleteOption={props.handleDeleteOption}
-	/>)
+	console.log(props.timerOptions)
+	let optionComponents: Array<any> = []
+	const mkOptionComponents = props.timerOptions.forEach(option => {
+		if (option === null) {
+			console.log(option)
+			return
+		}
+		else {
+			optionComponents.push(
+				<TimerOption 
+					startTimer={props.startTimer}
+					id={props.id}
+					time={option}
+					handleDeleteOption={props.handleDeleteOption}
+				/>
+			)
+		}
+	})
 	return (
 		<div className="app">
 			<StartStop
