@@ -7,7 +7,13 @@ import ParticipantsList from "./participants/ParticipantsList"
 // const backendURL = "http://192.168.228.111:9000/api/"
 // const backendURL = "http://localhost:9000/"
 // const backendURL = "http://192.168.228.111:9000"
-const backendURL = "https://127.0.0.1:3000"
+let backendURL
+if (process.env.NODE_ENV === 'development') {
+	backendURL ='http://localhost:9000/';
+}
+else {
+	backendURL = "/api"
+}
 const socket = io(backendURL)
 
 
