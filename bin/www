@@ -4,10 +4,15 @@
  * Module dependencies.
  */
 
-var app = require('../app');
+// var app = require('../app');
+const express = require("express")
+const path = require('path');
+const app = express()
 var debug = require('debug')('backend:server');
 var http = require('http');
 let models = require("../models");
+const cors = require("cors")
+app.use(cors())
 
 /**
  * Get port from environment and store in Express.
@@ -15,6 +20,16 @@ let models = require("../models");
 
 var port = normalizePort(process.env.PORT || '9000');
 app.set('port', port);
+app.listen(5000);
+
+app.use(express.static(path.join('client/build')));
+app.get('/', (req, res) => {
+	res.sendFile(path.join('client/build', 'index.html'))
+})
+
+// app.get('*', (req, res) => {
+// 	res.sendFile(path.join(__dirname+'/client/build/index.html'));
+//   });
 
 /**
  * Create HTTP server.
@@ -22,7 +37,6 @@ app.set('port', port);
 
 var server = http.createServer(app);
 const io = require("socket.io")(server, {
-	// path: "/api",
 	cors: {
 		origin: "*",
 		methods: ["GET", "POST"]

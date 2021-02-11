@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'development') {
 else {
 	backendURL = "/api"
 }
-const socket = io(backendURL)
+const socket = io()
 
 
 type myState = {

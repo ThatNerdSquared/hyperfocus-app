@@ -10,7 +10,6 @@ function ParticipantsList(props: {
 	}[]
 }) {
 	let users: Array<any> = []
-	console.log(props.users)
 	props.users.forEach(user => {
 		if (user.isOnline === true) {
 			return (
