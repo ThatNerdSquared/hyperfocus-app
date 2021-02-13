@@ -4,6 +4,7 @@ import io from "socket.io-client"
 import LoginScreen from "./LoginScreen"
 import ParticipantsList from "./participants/ParticipantsList"
 import Banner from "./assets/hyperfocus-banner.svg"
+import Favicon from "./assets/hyperfocus-favicon.png"
 
 // Uncomment the below for dev.
 // const socket = io("http://localhost:9000")
@@ -89,7 +90,6 @@ class App extends React.Component<unknown, myState> {
 			pom: pom
 		}
 		socket.emit("startTimer", data)
-		socket.emit("beginTickTock", id)
 	}
 
 	// Setup the `beforeunload` event listener
@@ -140,8 +140,16 @@ class App extends React.Component<unknown, myState> {
 			})
 		}
 		if (data.pomDone === true) {
-			// alert("Your work session has finished!")
-			new Notification("Your work session is complete!")
+			if (!("Notification" in window)) {
+				alert("Your work session has finished!")
+			}
+			else {
+				let options = {
+					body: "Your timer has finished!",
+					icon: Favicon,
+				};
+				new Notification("Hyperfocus", options)
+			}
 		}
 		if (data.users != null) {
 			let users = data.users

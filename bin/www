@@ -20,8 +20,74 @@ app.use(cors())
 
 var port = normalizePort(process.env.PORT || '9000');
 app.set('port', port);
-app.listen(5000);
-
+app.listen(5000, async function ticktock() {
+	console.log("meep")
+	const data = await models.timerStatus.findAll()
+	const id = data[0].dataValues.id
+	// if (data[0].dataValues.isIntervalSet === true) {
+	// 	return
+	// }
+	// else {
+		// const intervalSet = await models.timerStatus.update({
+		// 	isIntervalSet: true
+		// }, {
+		// 	where: {
+		// 		id: id
+		// 	}
+		// })
+		const newData = await models.timerStatus.findAll()
+		io.emit("connectionData", { timerStatus: newData })
+		const timerGoTickTock = setInterval(async () => {
+			const check = await models.timerStatus.findAll({
+				where: {
+					isRunning: false
+				}
+			})
+			if (check == "") {
+				const rawData = await models.timerStatus.findAll()
+				const data = rawData[0].dataValues
+				let min = data.minutes
+				let sec = data.seconds
+				let id = data.id
+				if (min === 0 && sec === 0) {
+					const newData = await models.timerStatus.update({
+						minutes: 0,
+						seconds: 0,
+						isRunning: false,
+					}, {
+						where: {
+							id: id
+						}
+					})
+					const newStatus = await models.timerStatus.findAll()
+					io.emit("timerGoTickTock", { timerStatus: newStatus, pomDone: true })
+				}
+				else {
+					let finalMin
+					let finalSec
+					if (sec-1 < 0) {
+						finalSec = 59
+						finalMin = min - 1
+					}
+					else {
+						finalSec = sec - 1
+						finalMin = min
+					}
+					const newData = await models.timerStatus.update({
+						minutes: finalMin,
+						seconds: finalSec
+					}, {
+						where: {
+							id: id
+						}
+					})
+					const newStatus = await models.timerStatus.findAll()
+					io.emit("timerGoTickTock", { timerStatus: newStatus })
+				}
+			}
+		}, 1000);
+	// }
+});
 app.use(express.static(path.join('client/build')));
 app.get('/', (req, res) => {
 	res.sendFile(path.join('client/build', 'index.html'))
@@ -111,71 +177,6 @@ io.on("connection", socket => {
 		})
 		io.emit("connectionData", { timerStatus: timerStatus, isLoggedIn: true, users: users })
 		io.to(socket.id).emit("private", { currentUser: currentUser });
-	})
-	socket.on("beginTickTock", async(id) => {
-		const data = await models.timerStatus.findAll()
-		if (data[0].dataValues.isIntervalSet === true) {
-			return
-		}
-		else {
-			const timerGoTickTock = setInterval(async () => {
-				const intervalSet = await models.timerStatus.update({
-					isIntervalSet: true
-				}, {
-					where: {
-						id: id
-					}
-				})
-				const newData = await models.timerStatus.findAll()
-				io.emit("connectionData", { timerStatus: newData })
-				const check = await models.timerStatus.findAll({
-					where: {
-						isRunning: false
-					}
-				})
-				if (check == "") {
-					const rawData = await models.timerStatus.findAll()
-					const data = rawData[0].dataValues
-					let min = data.minutes
-					let sec = data.seconds
-					let id = data.id
-					if (min === 0 && sec === 0) {
-						const newData = await models.timerStatus.update({
-							minutes: 0,
-							seconds: 0,
-							isRunning: false,
-						}, {
-							where: {
-								id: id
-							}
-						})
-						// clearInterval(timerGoTickTock)
-						const newStatus = await models.timerStatus.findAll()
-						io.emit("timerGoTickTock", { timerStatus: newStatus, pomDone: true })
-					}
-					let finalMin
-					let finalSec
-					if (sec-1 < 0) {
-						finalSec = 59
-						finalMin = min - 1
-					}
-					else {
-						finalSec = sec - 1
-						finalMin = min
-					}
-					const newData = await models.timerStatus.update({
-						minutes: finalMin,
-						seconds: finalSec
-					}, {
-						where: {
-							id: id
-						}
-					})
-					const newStatus = await models.timerStatus.findAll()
-					io.emit("timerGoTickTock", { timerStatus: newStatus })
-				}
-			}, 1000);
-		}
 	})
 	socket.on("startTimer", async data => {
 		const { minutes, id, pom } = data
