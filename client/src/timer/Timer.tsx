@@ -14,11 +14,9 @@ function Timer(props: {
 	handleDeleteOption: Function,
 	isRunning: boolean
 }) {
-	console.log(props.timerOptions)
 	let optionComponents: Array<any> = []
 	const mkOptionComponents = props.timerOptions.forEach(option => {
 		if (option === null) {
-			console.log(option)
 			return
 		}
 		else {

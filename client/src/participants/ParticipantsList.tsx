@@ -23,7 +23,7 @@ function ParticipantsList(props: {
 	})
 	return (
 		<div>
-			<h1>Participants</h1>
+			<h1 className="header2">Participants</h1>
 			{users}
 		</div>
 	)

@@ -149,7 +149,7 @@ io.on("connection", socket => {
 								id: id
 							}
 						})
-						clearInterval(timerGoTickTock)
+						// clearInterval(timerGoTickTock)
 						const newStatus = await models.timerStatus.findAll()
 						io.emit("timerGoTickTock", { timerStatus: newStatus, pomDone: true })
 					}

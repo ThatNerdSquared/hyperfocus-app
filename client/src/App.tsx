@@ -3,6 +3,7 @@ import Timer from "./timer/Timer"
 import io from "socket.io-client"
 import LoginScreen from "./LoginScreen"
 import ParticipantsList from "./participants/ParticipantsList"
+import Banner from "./assets/hyperfocus-banner.svg"
 
 // Uncomment the below for dev.
 // const socket = io("http://localhost:9000")
@@ -103,6 +104,7 @@ class App extends React.Component<unknown, myState> {
 		this.setState({
 			isLoggedIn: false
 		})
+		Notification.requestPermission();
 	}
 	
 	logMeIn(event: any) {
@@ -138,8 +140,8 @@ class App extends React.Component<unknown, myState> {
 			})
 		}
 		if (data.pomDone === true) {
-			alert("Your work session has finished!")
-			// new Notification("Your work session is complete!")
+			// alert("Your work session has finished!")
+			new Notification("Your work session is complete!")
 		}
 		if (data.users != null) {
 			let users = data.users
@@ -222,6 +224,7 @@ class App extends React.Component<unknown, myState> {
 			return (
 				<div className="app">
 					<div className="header">
+						<img src={Banner} width="600" height="100" alt="Hyperfocus app logo"/>
 						<h1>{pomText}</h1>
 					</div>
 					<div className="header">

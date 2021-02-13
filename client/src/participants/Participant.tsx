@@ -2,7 +2,7 @@ import React from "react"
 
 function Participant(props: any) {
 	return (
-		<div>
+		<div className="participants">
 			<p>{props.username}</p>
 		</div>
 	)
