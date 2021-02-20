@@ -9,6 +9,6 @@ Hyperfocus is a collaborative timer. Hop onto the site with some friends, set a 
 - Web app built with React and Express.js
 
 ## How do I access it?
-As of now this is very very incomplete so you're not going to find it running somewhere besides `localhost`. I wouldn't recommend cloning it either as there are likely many bugs or missing features.
+You can visit the app [here](https://hyperfocus-app.herokuapp.com). At the moment it only has one "room" so I wouldn't recommend using it for now.
 
-### Current Status: In progress but currently unusable
+### Current Status: Basic features done, usable but not very well featured.
