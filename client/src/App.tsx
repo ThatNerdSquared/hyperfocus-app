@@ -7,8 +7,8 @@ import Banner from "./assets/hyperfocus-banner.svg"
 import Favicon from "./assets/hyperfocus-favicon.png"
 
 // Uncomment the below for dev.
-const socket = io("http://localhost:9000")
-// const socket = io()
+// const socket = io("http://localhost:9000")
+const socket = io()
 
 
 type myState = {
