@@ -7,8 +7,8 @@ import Banner from "./assets/hyperfocus-banner.svg"
 import Favicon from "./assets/hyperfocus-favicon.png"
 
 // Uncomment the below for dev.
-// const socket = io("http://localhost:9000")
-const socket = io()
+const socket = io("http://localhost:9000")
+// const socket = io()
 
 
 type myState = {
@@ -104,7 +104,6 @@ class App extends React.Component<unknown, myState> {
 		this.setState({
 			isLoggedIn: false
 		})
-		Notification.requestPermission();
 	}
 	
 	logMeIn(event: any) {
@@ -124,6 +123,7 @@ class App extends React.Component<unknown, myState> {
 		}
 		else {
 			console.log("Notifications are supported");
+			Notification.requestPermission();
 		}
 	}
 
@@ -223,11 +223,11 @@ class App extends React.Component<unknown, myState> {
 			let status = this.state.timerStatus
 			let minutes
 			let seconds
-			let statusText
+			// let statusText
 			let pomText
 			numDigits(status.minutes) <= 1 ? minutes = `0${status.minutes}` : minutes = status.minutes
 			numDigits(status.seconds) <= 1 ? seconds = `0${status.seconds}` : seconds = status.seconds
-			this.state.timerStatus.isRunning === true ? statusText = "In Progress" : statusText = "Paused"
+			// this.state.timerStatus.isRunning === true ? statusText = "In Progress" : statusText = "Paused"
 			this.state.timerStatus.pom === true ? pomText = "Work Session" : pomText = "Break Time"
 			return (
 				<div className="app">
