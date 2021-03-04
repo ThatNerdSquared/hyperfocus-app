@@ -39,6 +39,10 @@ type myState = {
 	}
 }
 
+function numDigits(x: number) {
+	return Math.max(Math.floor(Math.log10(Math.abs(x))), 0) + 1;
+}
+
 class App extends React.Component<unknown, myState> {
 	constructor(props: unknown) {
 		super(props)
@@ -217,9 +221,6 @@ class App extends React.Component<unknown, myState> {
 
 	render() {
 		if (this.state.isLoggedIn) {
-			function numDigits(x: number) {
-				return Math.max(Math.floor(Math.log10(Math.abs(x))), 0) + 1;
-			}
 			let status = this.state.timerStatus
 			let minutes
 			let seconds
