@@ -7,8 +7,13 @@ import Banner from "./assets/hyperfocus-banner.svg"
 import Favicon from "./assets/hyperfocus-favicon.png"
 
 // Uncomment the below for dev.
-// const socket = io("http://localhost:9000")
-const socket = io()
+let socket: any
+if (process.env.NODE_ENV === 'development') {
+	socket = io("http://192.168.228.111:9000")
+}
+else {
+	socket = io()
+}
 
 
 type myState = {
@@ -98,11 +103,22 @@ class App extends React.Component<unknown, myState> {
 
 	// Setup the `beforeunload` event listener
 	setupBeforeUnloadListener() {
-		window.addEventListener("beforeunload", (event) => {
-			event.preventDefault();
-			return this.logMeOut()
-		});
-	};
+		window.addEventListener('beforeunload', this.alertUser)
+		window.addEventListener('unload', this.logMeOut)
+		return () => {
+			window.removeEventListener('beforeunload', this.alertUser)
+			window.removeEventListener('unload', this.logMeOut)
+		}
+	}
+	
+	handleTabClosing() {
+		this.logMeOut()
+	}
+	
+	alertUser(event:any) {
+		event.preventDefault()
+		event.returnValue = ''
+	}
 
 	componentDidMount() {
 		this.setState({
