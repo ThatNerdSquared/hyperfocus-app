@@ -21,20 +21,8 @@ app.use(cors())
 var port = normalizePort(process.env.PORT || '9000');
 app.set('port', port);
 app.listen(5000, async function ticktock() {
-	console.log("meep")
 	const data = await models.timerStatus.findAll()
 	const id = data[0].dataValues.id
-	// if (data[0].dataValues.isIntervalSet === true) {
-	// 	return
-	// }
-	// else {
-		// const intervalSet = await models.timerStatus.update({
-		// 	isIntervalSet: true
-		// }, {
-		// 	where: {
-		// 		id: id
-		// 	}
-		// })
 		const newData = await models.timerStatus.findAll()
 		io.emit("connectionData", { timerStatus: newData })
 		const timerGoTickTock = setInterval(async () => {
@@ -86,16 +74,11 @@ app.listen(5000, async function ticktock() {
 				}
 			}
 		}, 1000);
-	// }
 });
 app.use(express.static(path.join('client/build')));
 app.get('/', (req, res) => {
 	res.sendFile(path.join('client/build', 'index.html'))
 })
-
-// app.get('*', (req, res) => {
-// 	res.sendFile(path.join(__dirname+'/client/build/index.html'));
-//   });
 
 /**
  * Create HTTP server.

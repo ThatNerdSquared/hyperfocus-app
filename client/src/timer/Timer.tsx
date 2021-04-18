@@ -15,7 +15,7 @@ function Timer(props: {
 	isRunning: boolean
 }) {
 	let optionComponents: Array<any> = []
-	const mkOptionComponents = props.timerOptions.forEach(option => {
+	props.timerOptions.forEach(option => {
 		if (option === null) {
 			return
 		}

@@ -4,9 +4,9 @@ import Banner from "./assets/hyperfocus-banner.svg"
 function LoginScreen(props: any) {
 	return (
 		<div className="login">
-			<img src={Banner} width="600" height="100" alt="Hyperfocus app logo"/>
+			<img src={Banner} className="login-text" width="600" height="100" alt="Hyperfocus app logo"/>
 			<h1 className="login-text">Welcome to Hyperfocus!</h1>
-			<h1 className="login-text">What's your name?</h1>
+			<h1 className="login-text">What's your name, and what room are you joining?</h1>
 			<form className="login-form" onSubmit={props.logMeIn}>
 				<input
 					type="text"
@@ -16,8 +16,22 @@ function LoginScreen(props: any) {
 					onChange={props.formChange}
 					className="login-input"
 				/>
+				<input
+					type="text"
+					value={props.loginCode}
+					name="loginCode"
+					placeholder="i.e. 123456"
+					onChange={props.formChange}
+					className="login-input"
+				/>
 				<button className="login-button">Login/Join</button>
 			</form>
+			{
+				props.loginNameValid ? null: (<p className="warning-text">Please enter a username!</p>)
+			}
+			{
+				props.loginCodeValid ? null : (<p className="warning-text">Please enter a room code!</p>)
+			}
 			<p className="login-text">This is only used to show other participants who you are.</p>
 			<p className="login-text">More advanced room features and login options coming soon!</p>
 		</div>

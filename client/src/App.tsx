@@ -5,6 +5,7 @@ import LoginScreen from "./LoginScreen"
 import ParticipantsList from "./participants/ParticipantsList"
 import Banner from "./assets/hyperfocus-banner.svg"
 import Favicon from "./assets/hyperfocus-favicon.png"
+import { setupBeforeUnloadListener, handleTabClosing, alertUser } from "./AutoLogoutUtils"
 
 // Uncomment the below for dev.
 let socket: any
@@ -36,6 +37,9 @@ type myState = {
 	isLoggedIn: boolean,
 	newOption: string,
 	loginName: string
+	loginCode: string
+	loginNameValid: boolean,
+	loginCodeValid: boolean,
 	currentUser: {
 		id: number,
 		name: string,
@@ -66,6 +70,9 @@ class App extends React.Component<unknown, myState> {
 			isLoggedIn: false,
 			newOption: "",
 			loginName: "",
+			loginCode: "",
+			loginNameValid: true,
+			loginCodeValid: true,
 			currentUser: {
 				name: "Guest",
 				totalPomsToday: 0,
@@ -79,7 +86,6 @@ class App extends React.Component<unknown, myState> {
 		this.handleAddOption = this.handleAddOption.bind(this)
 		this.logMeIn = this.logMeIn.bind(this)
 		this.logMeOut = this.logMeOut.bind(this)
-		this.setupBeforeUnloadListener = this.setupBeforeUnloadListener.bind(this)
 	}
 	
 	formChange(event: any) {
@@ -101,43 +107,52 @@ class App extends React.Component<unknown, myState> {
 		socket.emit("startTimer", data)
 	}
 
-	// Setup the `beforeunload` event listener
-	setupBeforeUnloadListener() {
-		window.addEventListener('beforeunload', this.alertUser)
-		window.addEventListener('unload', this.logMeOut)
-		return () => {
-			window.removeEventListener('beforeunload', this.alertUser)
-			window.removeEventListener('unload', this.logMeOut)
-		}
+	logMeOut() {
+		socket.emit("logMeOut", this.state.currentUser)
 	}
 	
-	handleTabClosing() {
-		this.logMeOut()
-	}
-	
-	alertUser(event:any) {
+	async logMeIn(event: any) {
 		event.preventDefault()
-		event.returnValue = ''
+		if (this.state.loginName === "") {
+			await this.setState({
+				loginNameValid: false
+			})
+		}
+		else {
+			await this.setState({
+				loginNameValid: true
+			})
+		}
+		if (this.state.loginCode === "") {
+			await this.setState({
+				loginCodeValid: false
+			})
+		}
+		else {
+			await this.setState({
+				loginCodeValid: true
+			})
+		}
+
+		if (this.state.loginNameValid && this.state.loginCodeValid){
+			socket.emit("join", this.state.loginName)
+			setupBeforeUnloadListener(this.logMeOut)
+	
+			socket.on("connectionData", this.handleNewStatus)
+			socket.on("timerStarted", this.handleNewStatus)
+			socket.on("timerToggled", this.handleNewStatus)
+			socket.on("timerGoTickTock", this.handleNewStatus)
+			socket.on("optionAdded", this.handleNewStatus)
+			socket.on("optionDeleted", this.handleNewStatus)
+			socket.on("userLoggedOut", this.handleNewStatus)
+			socket.on("private", this.handleNewStatus)
+		}
 	}
 
 	componentDidMount() {
 		this.setState({
-			isLoggedIn: false
+			isLoggedIn: false,
 		})
-	}
-	
-	logMeIn(event: any) {
-		event.preventDefault()
-		socket.emit("join", this.state.loginName)
-		this.setupBeforeUnloadListener()
-		socket.on("connectionData", this.handleNewStatus)
-		socket.on("timerStarted", this.handleNewStatus)
-		socket.on("timerToggled", this.handleNewStatus)
-		socket.on("timerGoTickTock", this.handleNewStatus)
-		socket.on("optionAdded", this.handleNewStatus)
-		socket.on("optionDeleted", this.handleNewStatus)
-		socket.on("userLoggedOut", this.handleNewStatus)
-		socket.on("private", this.handleNewStatus)
 		if (!("Notification" in window)) {
 			console.log("This browser does not support desktop notification");
 		}
@@ -145,10 +160,6 @@ class App extends React.Component<unknown, myState> {
 			console.log("Notifications are supported");
 			Notification.requestPermission();
 		}
-	}
-
-	logMeOut() {
-		socket.emit("logMeOut", this.state.currentUser)
 	}
 
 	handleNewStatus(data: any) {
@@ -223,7 +234,7 @@ class App extends React.Component<unknown, myState> {
 		socket.emit("deleteOption", data)
 	}
 
-	async toggleRunning(event: any) {
+	toggleRunning(event: any) {
 		event.preventDefault()
 		let newRunning
 		this.state.timerStatus.isRunning === true ? newRunning = false : newRunning = true
@@ -285,6 +296,8 @@ class App extends React.Component<unknown, myState> {
 						logMeIn={this.logMeIn}
 						formChange={this.formChange}
 						loginName={this.state.loginName}
+						loginNameValid={this.state.loginNameValid}
+						loginCodeValid={this.state.loginCodeValid}
 					/>
 				</div>
 			)

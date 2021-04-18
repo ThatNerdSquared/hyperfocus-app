@@ -16,17 +16,30 @@ code {
 .login {
 	display: grid;
 	justify-content: center;
+	grid-template-columns: 700px;
+	margin: auto;
 }
 
 .login-text {
 	text-align: center;
 	padding: 10px;
 	color: #00000080;
+	margin: auto;
+}
+
+.warning-text {
+	text-align: center;
+	color: #DC143C;
+	font-weight: bold;
 }
 
 .login-form {
 	padding: 20px;
 	text-align: center;
+	display: grid;
+	grid-template-rows: 1fr 1fr 1fr;
+	grid-template-columns: 300px;
+	margin: auto;
 }
 
 .login-input {
