@@ -32,6 +32,12 @@ function LoginScreen(props: any) {
 			{
 				props.loginCodeValid ? null : (<p className="warning-text">Please enter a room code!</p>)
 			}
+			<button
+				className="login-button"
+				onClick={props.toggleRoomModal}
+			>
+				Create Room
+			</button>
 			<p className="login-text">This is only used to show other participants who you are.</p>
 			<p className="login-text">More advanced room features and login options coming soon!</p>
 		</div>

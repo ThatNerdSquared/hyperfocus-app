@@ -2,10 +2,11 @@ import React from "react"
 import Timer from "./timer/Timer"
 import io from "socket.io-client"
 import LoginScreen from "./LoginScreen"
+import NewRoomModal from "./NewRoomModal"
 import ParticipantsList from "./participants/ParticipantsList"
 import Banner from "./assets/hyperfocus-banner.svg"
 import Favicon from "./assets/hyperfocus-favicon.png"
-import { setupBeforeUnloadListener, handleTabClosing, alertUser } from "./AutoLogoutUtils"
+import { setupBeforeUnloadListener } from "./AutoLogoutUtils"
 
 // Uncomment the below for dev.
 let socket: any
@@ -40,6 +41,7 @@ type myState = {
 	loginCode: string
 	loginNameValid: boolean,
 	loginCodeValid: boolean,
+	newRoomModalShown: boolean,
 	currentUser: {
 		id: number,
 		name: string,
@@ -73,6 +75,7 @@ class App extends React.Component<unknown, myState> {
 			loginCode: "",
 			loginNameValid: true,
 			loginCodeValid: true,
+			newRoomModalShown: false,
 			currentUser: {
 				name: "Guest",
 				totalPomsToday: 0,
@@ -83,6 +86,7 @@ class App extends React.Component<unknown, myState> {
 		this.toggleRunning = this.toggleRunning.bind(this)
 		this.handleNewStatus = this.handleNewStatus.bind(this)
 		this.formChange = this.formChange.bind(this)
+		this.toggleRoomModal = this.toggleRoomModal.bind(this)
 		this.handleAddOption = this.handleAddOption.bind(this)
 		this.logMeIn = this.logMeIn.bind(this)
 		this.logMeOut = this.logMeOut.bind(this)
@@ -92,6 +96,12 @@ class App extends React.Component<unknown, myState> {
 		const name = event.target.name
 		const value = event.target.value
 		this.setState({ [name]: value })
+	}
+
+	async toggleRoomModal() {
+		let newToggle = !this.state.newRoomModalShown
+		await this.setState({ newRoomModalShown: newToggle })
+		console.log(this.state.newRoomModalShown)
 	}
 
 	async startTimer(event: any) {
@@ -295,10 +305,16 @@ class App extends React.Component<unknown, myState> {
 					<LoginScreen
 						logMeIn={this.logMeIn}
 						formChange={this.formChange}
+						toggleRoomModal={this.toggleRoomModal}
 						loginName={this.state.loginName}
 						loginNameValid={this.state.loginNameValid}
 						loginCodeValid={this.state.loginCodeValid}
 					/>
+					{ this.state.newRoomModalShown ?
+						(<NewRoomModal
+							toggleRoomModal={this.toggleRoomModal}
+						/>) : null
+					}
 				</div>
 			)
 		}

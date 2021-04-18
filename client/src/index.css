@@ -53,12 +53,51 @@ code {
 	border: 4px solid #00000080;
 	border-radius: 10px;
 	color: #00000080;
+	margin: auto;
+	min-width: 300px;
 }
 
 .login-button:hover {
 	transform: translateY(-0.25em);
 	-webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
 	-moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+}
+
+.close-button {
+	float: right;
+	font-size:14pt;
+	background-color: #ffffff;
+	border: 0px solid #00000080;
+	border-radius: 10px;
+	color: #00000080;
+	margin: auto;
+	min-width: 30px;
+	min-height: 40px;
+}
+
+.modal {
+	text-align: center;
+	background-color: #ffffff;
+	width: 50%;
+	height: 50%;
+	top: 20%;
+	bottom: 30%;
+	left: 20%;
+	right: 20%;
+	margin: auto;
+	position: fixed;
+	z-index: 1;
+	border-radius: 10px;
+	-webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+	-moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+}
+
+.modal-content {
+	display: grid;
+	text-align: center;
+	margin: auto;
+	justify-content: center;
+	align-items: center;
 }
 
 .app {
