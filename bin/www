@@ -1,10 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
-
-// var app = require('../app');
+// Require dependencies
 const express = require("express")
 const path = require('path');
 const app = express()
@@ -14,10 +10,15 @@ let models = require("../models");
 const cors = require("cors")
 app.use(cors())
 
-/**
- * Get port from environment and store in Express.
- */
+// Require utils
+let socketJoin = require("../serverUtils/socketJoin.ts")
+let startTimer = require("../serverUtils/startTimer.ts")
+let toggleTimer = require("../serverUtils/toggleTimer.ts")
+let addOption = require("../serverUtils/addOption.ts")
+let deleteOption = require("../serverUtils/deleteOption.ts")
+let logMeOut = require("../serverUtils/logMeOut.ts")
 
+// Get port from environment and store in Express.
 var port = normalizePort(process.env.PORT || '9000');
 app.set('port', port);
 app.listen(5000, async function ticktock() {
@@ -99,149 +100,22 @@ io.on("connection", socket => {
 	// 	io.emit("roomJoined", room);
 	// });
 	socket.on("join", async username => {
-		let timerStatus = await models.timerStatus.findAll()
-		if (timerStatus == "") {
-			await models.timerStatus.create({
-				id: 42,
-				minutes: 420,
-				seconds: 69,
-				pom: false,
-				isRunning: false,
-				isIntervalSet: false,
-				timerOptions: [15, 25, 50, 90],
-				participants: []
-			})
-		}
-		else {
-			const checkPeople = await models.user.findAll({
-				where: {
-					isOnline: true
-				}
-			})
-			if (checkPeople == "") {
-				await models.timerStatus.update({
-					isRunning: false,
-					isIntervalSet: false
-				}, {
-					where: {
-						isRunning: true 
-					}
-				})
-			}
-		}
-		let users = await models.user.findAll()
-		let checkCurrentUser = await models.user.findAll({
-			where: {
-				name: username
-			}
-		})
-		if (checkCurrentUser == "") {
-			await models.user.create({
-				name: username,
-				totalPomsToday: 0,
-				isOnline: true
-			})
-		}
-		else {
-			await models.user.update({
-				isOnline: true
-			}, {
-				where: {
-					name: username
-				}
-			})
-		}
-		users = await models.user.findAll()
-		timerStatus = await models.timerStatus.findAll()
-		let currentUser = await models.user.findAll({
-			where: {
-				name: username
-			}
-		})
-		io.emit("connectionData", { timerStatus: timerStatus, isLoggedIn: true, users: users })
-		io.to(socket.id).emit("private", { currentUser: currentUser });
+		socketJoin(io, socket, models,  username)
 	})
 	socket.on("startTimer", async data => {
-		const { minutes, id, pom } = data
-		let newPom
-		pom === true ? newPom = false : newPom = true
-		const newData = await models.timerStatus.update({
-			minutes: minutes,
-			seconds: 0,
-			pom: newPom,
-			isRunning: true
-		}, {
-			where: {
-				id: id
-			}
-		})
-		const newStatus = await models.timerStatus.findAll()
-		io.emit("timerStarted", { timerStatus: newStatus })
-
+		startTimer(io, models, data)
 	})
 	socket.on("toggleTimer", async signal => {
-		const { isRunning, id } = signal
-		const newData = await models.timerStatus.update({
-			isRunning: isRunning
-		}, {
-			where: {
-				id: id
-			}
-		})
-		const newStatus = await models.timerStatus.findAll()
-		io.emit("timerToggled", { timerStatus: newStatus })
+		toggleTimer(io, models, signal)
 	})
 	socket.on("addOption", async data => {
-		const { id, option } = data
-		let oldData = await models.timerStatus.findAll()
-		let oldArray = oldData[0].dataValues.timerOptions
-		let newArray = []
-		oldArray.forEach(item => newArray.push(item))
-		newArray.push(option)
-		const newData = await models.timerStatus.update({
-			timerOptions: newArray
-		}, {
-			where: {
-				id: id
-			}
-		})
-		const newStatus = await models.timerStatus.findAll()
-		io.emit("optionAdded", { timerStatus: newStatus })
+		addOption(io, models, data)
 	})
 	socket.on("deleteOption", async data => {
-		const { id, option } = data
-		console.log(option)
-		let oldData = await models.timerStatus.findAll()
-		let oldArray = oldData[0].dataValues.timerOptions
-		let newArray = []
-		oldArray.forEach(item => {
-			if (item != option) {
-				newArray.push(item)
-			}
-		})
-		console.log(newArray)
-		const newData = await models.timerStatus.update({
-			timerOptions: newArray
-		}, {
-			where: {
-				id: id
-			}
-		})
-		const newStatus = await models.timerStatus.findAll()
-		io.emit("optionDeleted", { timerStatus: newStatus })
+		deleteOption(io, models, data)
 	})
 	socket.on("logMeOut", async user => {
-		const { id, name, totalPomsToday, isOnline } = user
-		const userID = user[0].id
-		const logOutUser = await models.user.update({
-			isOnline: false
-		}, {
-			where: {
-				id: userID
-			}
-		})
-		const newUsers = await models.user.findAll()
-		io.emit("userLoggedOut", { users: newUsers })
+		logMeOut(io, models, user)
 	})
 })
 
