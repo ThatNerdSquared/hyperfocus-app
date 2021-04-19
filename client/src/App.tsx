@@ -42,6 +42,8 @@ type myState = {
 	loginNameValid: boolean,
 	loginCodeValid: boolean,
 	newRoomModalShown: boolean,
+	newRoomCode: string,
+	roomCodeValid: boolean,
 	currentUser: {
 		id: number,
 		name: string,
@@ -76,6 +78,8 @@ class App extends React.Component<unknown, myState> {
 			loginNameValid: true,
 			loginCodeValid: true,
 			newRoomModalShown: false,
+			newRoomCode: "",
+			roomCodeValid: true,
 			currentUser: {
 				name: "Guest",
 				totalPomsToday: 0,
@@ -87,6 +91,7 @@ class App extends React.Component<unknown, myState> {
 		this.handleNewStatus = this.handleNewStatus.bind(this)
 		this.formChange = this.formChange.bind(this)
 		this.toggleRoomModal = this.toggleRoomModal.bind(this)
+		this.newRoom = this.newRoom.bind(this)
 		this.handleAddOption = this.handleAddOption.bind(this)
 		this.logMeIn = this.logMeIn.bind(this)
 		this.logMeOut = this.logMeOut.bind(this)
@@ -100,8 +105,26 @@ class App extends React.Component<unknown, myState> {
 
 	async toggleRoomModal() {
 		let newToggle = !this.state.newRoomModalShown
-		await this.setState({ newRoomModalShown: newToggle })
-		console.log(this.state.newRoomModalShown)
+		await this.setState({
+			newRoomModalShown: newToggle,
+			roomCodeValid: true,
+		})
+	}
+
+	async newRoom(event: any) {
+		event.preventDefault()
+		if (this.state.newRoomCode === "") {
+			await this.setState({
+				roomCodeValid: false
+			})
+		}
+		else {
+			await this.setState({
+				roomCodeValid: true,
+				newRoomCode: ""
+			})
+			this.toggleRoomModal()
+		}
 	}
 
 	async startTimer(event: any) {
@@ -312,7 +335,11 @@ class App extends React.Component<unknown, myState> {
 					/>
 					{ this.state.newRoomModalShown ?
 						(<NewRoomModal
+							newRoom={this.newRoom}
 							toggleRoomModal={this.toggleRoomModal}
+							formChange={this.formChange}
+							newRoomCode={this.state.newRoomCode}
+							roomCodeValid={this.state.roomCodeValid}
 						/>) : null
 					}
 				</div>

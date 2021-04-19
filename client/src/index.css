@@ -64,18 +64,19 @@ code {
 }
 
 .close-button {
-	float: right;
 	font-size:14pt;
 	background-color: #ffffff;
 	border: 0px solid #00000080;
 	border-radius: 10px;
 	color: #00000080;
-	margin: auto;
-	min-width: 30px;
-	min-height: 40px;
+	grid-column: 3/3;
+	grid-row: 1/2;
 }
 
 .modal {
+	display: grid;
+	grid-template-columns: 1fr 9fr 1fr;
+	grid-template-rows: 1fr 9fr;
 	text-align: center;
 	background-color: #ffffff;
 	width: 50%;
@@ -93,11 +94,16 @@ code {
 }
 
 .modal-content {
+	grid-column: 2/3;
+	grid-row: 2/2;
+}
+
+.modal-form {
 	display: grid;
-	text-align: center;
 	margin: auto;
+	text-align: center;
 	justify-content: center;
-	align-items: center;
+	grid-template-columns: 300px;
 }
 
 .app {
