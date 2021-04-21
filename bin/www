@@ -12,6 +12,7 @@ app.use(cors())
 
 // Require utils
 let socketJoin = require("../serverUtils/socketJoin.ts")
+let newRoom = require("../serverUtils/newRoom.ts")
 let startTimer = require("../serverUtils/startTimer.ts")
 let toggleTimer = require("../serverUtils/toggleTimer.ts")
 let addOption = require("../serverUtils/addOption.ts")
@@ -22,6 +23,31 @@ let logMeOut = require("../serverUtils/logMeOut.ts")
 var port = normalizePort(process.env.PORT || '9000');
 app.set('port', port);
 app.listen(5000, async function ticktock() {
+
+	let strayStatuses = await models.timerStatus.findAll({
+		where: {
+			roomCode: null
+		}
+	})
+	strayStatuses.forEach(async status => {
+		await status.destroy()
+	});
+
+	let timerStatus = await models.timerStatus.findAll()
+	if (timerStatus == "") {
+		await models.timerStatus.create({
+			id: 42,
+			roomCode: "ultraYeet",
+			minutes: 0,
+			seconds: 0,
+			pom: false,
+			isRunning: false,
+			isIntervalSet: false,
+			timerOptions: [15, 25, 50, 90],
+			participants: []
+		})
+	}
+
 	const data = await models.timerStatus.findAll()
 	const id = data[0].dataValues.id
 		const newData = await models.timerStatus.findAll()
@@ -100,7 +126,10 @@ io.on("connection", socket => {
 	// 	io.emit("roomJoined", room);
 	// });
 	socket.on("join", async username => {
-		socketJoin(io, socket, models,  username)
+		socketJoin(io, socket, models, username)
+	})
+	socket.on("newRoom", async code => {
+		newRoom(io, socket, models, code)
 	})
 	socket.on("startTimer", async data => {
 		startTimer(io, models, data)

@@ -45,6 +45,8 @@ type myState = {
 	newRoomModalShown: boolean,
 	newRoomCode: string,
 	roomCodeValid: boolean,
+	roomAlreadyExists: boolean,
+	roomCreated: boolean,
 	currentUser: {
 		id: number,
 		name: string,
@@ -82,6 +84,8 @@ class App extends React.Component<unknown, myState> {
 			newRoomModalShown: false,
 			newRoomCode: "",
 			roomCodeValid: true,
+			roomAlreadyExists: false,
+			roomCreated: false,
 			currentUser: {
 				name: "Guest",
 				totalPomsToday: 0,
@@ -110,10 +114,12 @@ class App extends React.Component<unknown, myState> {
 		await this.setState({
 			newRoomModalShown: newToggle,
 			roomCodeValid: true,
+			roomAlreadyExists: false,
+			roomCreated: false
 		})
 	}
 
-	async newRoom(event: any) {
+async newRoom(event: any) {
 		event.preventDefault()
 		if (this.state.newRoomCode === "") {
 			await this.setState({
@@ -187,7 +193,6 @@ class App extends React.Component<unknown, myState> {
 			socket.on("optionAdded", this.handleNewStatus)
 			socket.on("optionDeleted", this.handleNewStatus)
 			socket.on("userLoggedOut", this.handleNewStatus)
-			socket.on("private", this.handleNewStatus)
 		}
 	}
 
@@ -202,6 +207,7 @@ class App extends React.Component<unknown, myState> {
 			console.log("Notifications are supported");
 			Notification.requestPermission();
 		}
+		socket.on("private", this.handleNewStatus)
 	}
 
 	handleNewStatus(data: any) {
@@ -238,7 +244,18 @@ class App extends React.Component<unknown, myState> {
 		}
 		if (data.isLoggedIn === true) {
 			this.setState({
-				isLoggedIn: true
+				isLoggedIn: true,
+				roomAlreadyExists: false
+			})
+		}
+		if (data.roomAlreadyExists === true) {
+			this.setState({
+				roomAlreadyExists: true
+			})
+		}
+		if (data.roomCreated === true) {
+			this.setState({
+				roomCreated: true
 			})
 		}
 	}
@@ -335,6 +352,8 @@ class App extends React.Component<unknown, myState> {
 						loginName={this.state.loginName}
 						loginNameValid={this.state.loginNameValid}
 						loginCodeValid={this.state.loginCodeValid}
+						roomAlreadyExists={this.state.roomAlreadyExists}
+						roomCreated={this.state.roomCreated}
 					/>
 					{ this.state.newRoomModalShown ?
 						(<NewRoomModal

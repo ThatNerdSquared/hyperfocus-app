@@ -29,7 +29,13 @@ code {
 
 .warning-text {
 	text-align: center;
-	color: #DC143C;
+	color: #cd2345;
+	font-weight: bold;
+}
+
+.happy-text {
+	text-align: center;
+	color: #7cddae;
 	font-weight: bold;
 }
 

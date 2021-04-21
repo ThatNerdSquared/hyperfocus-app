@@ -38,6 +38,12 @@ function LoginScreen(props: any) {
 			>
 				Create Room
 			</button>
+			{
+				props.roomAlreadyExists ? (<p className="warning-text">This room already exists!</p>) : null
+			}
+			{
+				props.roomCreated ? (<p className="happy-text">Your room was created!</p>) : null
+			}
 			<p className="login-text">This is only used to show other participants who you are.</p>
 			<p className="login-text">More advanced room features and login options coming soon!</p>
 		</div>

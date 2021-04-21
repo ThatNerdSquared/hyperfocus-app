@@ -1,6 +1,10 @@
 "use strict"
 module.exports = (sequelize, DataTypes) => {
 	let timerStatus = sequelize.define("timerStatus", {
+		roomCode: {
+			allowNull: false,
+			type: DataTypes.STRING
+		},
 		minutes: {
 			allowNull: false,
 			type: DataTypes.INTEGER
