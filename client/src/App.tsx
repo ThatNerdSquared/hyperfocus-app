@@ -21,6 +21,7 @@ else {
 type myState = {
 	timerStatus: {
 		id: number,
+		roomCode: string,
 		minutes: number,
 		seconds: number,
 		pom: boolean,
@@ -62,6 +63,7 @@ class App extends React.Component<unknown, myState> {
 		this.state = {
 			timerStatus: {
 				id: 27,
+				roomCode: "",
 				minutes: 10101,
 				seconds: 42,
 				pom: false,
@@ -104,7 +106,7 @@ class App extends React.Component<unknown, myState> {
 	}
 
 	async toggleRoomModal() {
-		let newToggle = !this.state.newRoomModalShown
+		let newToggle: boolean = !this.state.newRoomModalShown
 		await this.setState({
 			newRoomModalShown: newToggle,
 			roomCodeValid: true,
@@ -119,29 +121,32 @@ class App extends React.Component<unknown, myState> {
 			})
 		}
 		else {
+			let code: string = this.state.newRoomCode
 			await this.setState({
 				roomCodeValid: true,
 				newRoomCode: ""
 			})
 			this.toggleRoomModal()
+			socket.emit("newRoom", code)
 		}
 	}
 
 	async startTimer(event: any) {
 		event.preventDefault()
-		let newMinutes = event.target.name
-		let id = event.target.id
-		let pom = this.state.timerStatus.pom
-		let data = {
-			id: id,
-			minutes: newMinutes,
-			pom: pom
+		let data: object = {
+			roomCode: this.state.timerStatus.roomCode,
+			minutes: event.target.name,
+			pom: this.state.timerStatus.pom
 		}
 		socket.emit("startTimer", data)
 	}
 
 	logMeOut() {
-		socket.emit("logMeOut", this.state.currentUser)
+		let data: object = {
+			user: this.state.currentUser,
+			roomCode: this.state.timerStatus.roomCode
+		}
+		socket.emit("logMeOut", data)
 	}
 	
 	async logMeIn(event: any) {
@@ -168,7 +173,11 @@ class App extends React.Component<unknown, myState> {
 		}
 
 		if (this.state.loginNameValid && this.state.loginCodeValid){
-			socket.emit("join", this.state.loginName)
+			let data: object = {
+				loginName: this.state.loginName,
+				roomCode: this.state.loginCode
+			}
+			socket.emit("join", data)
 			setupBeforeUnloadListener(this.logMeOut)
 	
 			socket.on("connectionData", this.handleNewStatus)
@@ -236,16 +245,14 @@ class App extends React.Component<unknown, myState> {
 
 	handleAddOption(event: any) {
 		event.preventDefault()
-		let id = this.state.timerStatus.id
-		let option = this.state.newOption
-		let newOption = parseInt(option)
-		console.log(newOption)
+		let option: string = this.state.newOption
+		let newOption: number = parseInt(option)
 		if (isNaN(newOption)) {
 			return
 		}
 		else {
-			let data = {
-				id: id,
+			let data: object = {
+				roomCode: this.state.timerStatus.roomCode,
 				option: newOption
 			}
 			socket.emit("addOption", data)
@@ -257,23 +264,19 @@ class App extends React.Component<unknown, myState> {
 
 	handleDeleteOption(event: any) {
 		event.preventDefault()
-		console.log(event)
-		let id = event.target.id
-		let option = event.target.name
-		let data = {
-			id: id,
-			option: option
+		let data: object = {
+			roomCode: this.state.timerStatus.roomCode,
+			option: event.target.name
 		}
 		socket.emit("deleteOption", data)
 	}
 
 	toggleRunning(event: any) {
 		event.preventDefault()
-		let newRunning
+		let newRunning: boolean
 		this.state.timerStatus.isRunning === true ? newRunning = false : newRunning = true
-		let id = event.target.id
 		let data = {
-			id: id,
+			roomCode: this.state.timerStatus.roomCode,
 			isRunning: newRunning,
 		}
 		socket.emit("toggleTimer", data)
