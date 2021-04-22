@@ -1,43 +1,34 @@
-module.exports = async function socketJoin(io, socket, models, username) {
-	let timerStatus = await models.timerStatus.findAll()
-	if (timerStatus == "") {
-		await models.timerStatus.create({
-			id: 42,
-			minutes: 420,
-			seconds: 69,
-			pom: false,
-			isRunning: false,
-			isIntervalSet: false,
-			timerOptions: [15, 25, 50, 90],
-			participants: []
-		})
-	}
-	else {
-		const checkPeople = await models.user.findAll({
-			where: {
-				isOnline: true
-			}
-		})
-		if (checkPeople == "") {
-			await models.timerStatus.update({
-				isRunning: false,
-				isIntervalSet: false
-			}, {
-				where: {
-					isRunning: true
-				}
-			})
-		}
-	}
-	let users = await models.user.findAll()
-	let checkCurrentUser = await models.user.findAll({
+module.exports = async function socketJoin(io, socket, models, data) {
+	let timerStatus = await models.timerStatus.findAll({
 		where: {
-			name: username
+			roomCode: data.roomCode
+		}
+	})
+	if (timerStatus == "") {
+		io.to(socket.id).emit("private", { roomDoesNot: true })
+		return
+	}
+
+	await models.client.create({
+		code: data.roomCode,
+		name: data.loginName,
+		socket: socket.id
+	})
+
+	const getClients = await models.client.findAll({
+		where: {
+			code: data.roomCode
+		}
+	})
+
+	const checkCurrentUser = await models.user.findAll({
+		where: {
+			name: data.loginName
 		}
 	})
 	if (checkCurrentUser == "") {
 		await models.user.create({
-			name: username,
+			name: data.loginName,
 			totalPomsToday: 0,
 			isOnline: true
 		})
@@ -47,17 +38,37 @@ module.exports = async function socketJoin(io, socket, models, username) {
 			isOnline: true
 		}, {
 			where: {
-				name: username
+				name: data.loginName
 			}
 		})
 	}
-	users = await models.user.findAll()
-	timerStatus = await models.timerStatus.findAll()
-	let currentUser = await models.user.findAll({
+
+	const newParticipants = []
+	getClients.forEach(x => {
+		newParticipants.includes(x.name) === true ? null : newParticipants.push(x.name)
+	})
+	newParticipants.includes(data.loginName) === true ? null : newParticipants.push(data.loginName)
+	await models.timerStatus.update({
+		participants: newParticipants
+	}, {
 		where: {
-			name: username
+			roomCode: data.roomCode
 		}
 	})
-	io.emit("connectionData", { timerStatus: timerStatus, isLoggedIn: true, users: users })
-	io.to(socket.id).emit("private", { currentUser: currentUser })
+	timerStatus = await models.timerStatus.findAll({
+		where: {
+			roomCode: data.roomCode
+		}
+	})
+
+	const currentUser = await models.user.findAll({
+		where: {
+			name: data.loginName
+		}
+	})
+
+	getClients.forEach(client => {
+		io.to(client.socket).emit("connectionData", { timerStatus: timerStatus })
+	})
+	io.to(socket.id).emit("private", { currentUser: currentUser, isLoggedIn: true })
 }

@@ -1,30 +1,19 @@
 import React from "react"
 import Participant from "./Participant"
 
-function ParticipantsList(props: {
-	users: {
-		id: number,
-		name: string,
-		totalPomsToday: number,
-		isOnline: boolean
-	}[]
-}) {
-	let users: Array<any> = []
-	props.users.forEach(user => {
-		if (user.isOnline === true) {
-			return (
-				users.push(
-					<Participant
-						username={user.name}
-					/>
-				)
-			)
-		}
+function ParticipantsList(props: { participants: Array<string> }) {
+	let activeParticipants: Array<any> = []
+	props.participants.forEach(participant => {
+		activeParticipants.push(
+			<Participant
+				username={participant}
+			/>
+		)
 	})
 	return (
 		<div>
 			<h1 className="header2">Participants</h1>
-			{users}
+			{activeParticipants}
 		</div>
 	)
 }

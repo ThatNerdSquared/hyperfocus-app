@@ -30,12 +30,6 @@ type myState = {
 		timerOptions: Array<number>,
 		participants: Array<string>,
 	},
-	users: {
-		id: number,
-		name: string,
-		totalPomsToday: number,
-		isOnline: boolean
-	}[],
 	isLoggedIn: boolean,
 	newOption: string,
 	loginName: string
@@ -47,6 +41,7 @@ type myState = {
 	roomCodeValid: boolean,
 	roomAlreadyExists: boolean,
 	roomCreated: boolean,
+	roomDoesNot: boolean,
 	currentUser: {
 		id: number,
 		name: string,
@@ -74,7 +69,6 @@ class App extends React.Component<unknown, myState> {
 				timerOptions: [],
 				participants: [],
 			},
-			users: [],
 			isLoggedIn: false,
 			newOption: "",
 			loginName: "",
@@ -86,6 +80,7 @@ class App extends React.Component<unknown, myState> {
 			roomCodeValid: true,
 			roomAlreadyExists: false,
 			roomCreated: false,
+			roomDoesNot: false,
 			currentUser: {
 				name: "Guest",
 				totalPomsToday: 0,
@@ -119,7 +114,7 @@ class App extends React.Component<unknown, myState> {
 		})
 	}
 
-async newRoom(event: any) {
+	async newRoom(event: any) {
 		event.preventDefault()
 		if (this.state.newRoomCode === "") {
 			await this.setState({
@@ -230,12 +225,6 @@ async newRoom(event: any) {
 				new Notification("Hyperfocus", options)
 			}
 		}
-		if (data.users != null) {
-			let users = data.users
-			this.setState({
-				users: users
-			})
-		}
 		if (data.currentUser != null) {
 			let currentUser = data.currentUser
 			this.setState({
@@ -256,6 +245,11 @@ async newRoom(event: any) {
 		if (data.roomCreated === true) {
 			this.setState({
 				roomCreated: true
+			})
+		}
+		if (data.roomDoesNot === true) {
+			this.setState({
+				roomDoesNot: true
 			})
 		}
 	}
@@ -335,7 +329,7 @@ async newRoom(event: any) {
 						</div>
 						<div>
 							<ParticipantsList
-								users={this.state.users}
+								participants={this.state.timerStatus.participants}
 							/>
 						</div>
 					</div>
@@ -354,6 +348,7 @@ async newRoom(event: any) {
 						loginCodeValid={this.state.loginCodeValid}
 						roomAlreadyExists={this.state.roomAlreadyExists}
 						roomCreated={this.state.roomCreated}
+						roomDoesNot={this.state.roomDoesNot}
 					/>
 					{ this.state.newRoomModalShown ?
 						(<NewRoomModal

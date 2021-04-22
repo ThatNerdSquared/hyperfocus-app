@@ -42,6 +42,9 @@ function LoginScreen(props: any) {
 				props.roomAlreadyExists ? (<p className="warning-text">This room already exists!</p>) : null
 			}
 			{
+				props.roomDoesNot ? (<p className="warning-text">This room does not exist!</p>) : null
+			}
+			{
 				props.roomCreated ? (<p className="happy-text">Your room was created!</p>) : null
 			}
 			<p className="login-text">This is only used to show other participants who you are.</p>

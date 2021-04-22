@@ -125,8 +125,8 @@ io.on("connection", socket => {
 	// 	socket.join(room);
 	// 	io.emit("roomJoined", room);
 	// });
-	socket.on("join", async username => {
-		socketJoin(io, socket, models, username)
+	socket.on("join", async data => {
+		socketJoin(io, socket, models, data)
 	})
 	socket.on("newRoom", async code => {
 		newRoom(io, socket, models, code)
