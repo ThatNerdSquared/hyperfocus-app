@@ -60,8 +60,8 @@ io.on("connection", socket => {
 	socket.on("startTimer", async data => {
 		startTimer(io, models, data)
 	})
-	socket.on("toggleTimer", async signal => {
-		toggleTimer(io, models, signal)
+	socket.on("toggleTimer", async data => {
+		toggleTimer(io, models, data)
 	})
 	socket.on("addOption", async data => {
 		addOption(io, models, data)

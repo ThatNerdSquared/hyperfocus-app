@@ -94,6 +94,7 @@ class App extends React.Component<unknown, myState> {
 		this.toggleRoomModal = this.toggleRoomModal.bind(this)
 		this.newRoom = this.newRoom.bind(this)
 		this.handleAddOption = this.handleAddOption.bind(this)
+		this.handleDeleteOption = this.handleDeleteOption.bind(this)
 		this.logMeIn = this.logMeIn.bind(this)
 		this.logMeOut = this.logMeOut.bind(this)
 	}

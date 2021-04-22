@@ -1,22 +1,36 @@
 module.exports = async function deleteOption(io, models, data) {
-	const { id, option } = data
-	console.log(option)
-	let oldData = await models.timerStatus.findAll()
-	let oldArray = oldData[0].dataValues.timerOptions
-	let newArray = []
+	const oldData = await models.timerStatus.findAll({
+		where: {
+			roomCode: data.roomCode
+		}
+	})
+	const oldArray = oldData[0].dataValues.timerOptions
+	const newArray = []
 	oldArray.forEach(item => {
-		if (item != option) {
+		if (item != data.option) {
 			newArray.push(item)
 		}
 	})
-	console.log(newArray)
-	const newData = await models.timerStatus.update({
+
+	await models.timerStatus.update({
 		timerOptions: newArray
 	}, {
 		where: {
-			id: id
+			roomCode: data.roomCode
 		}
 	})
-	const newStatus = await models.timerStatus.findAll()
-	io.emit("optionDeleted", { timerStatus: newStatus })
+
+	const newStatus = await models.timerStatus.findAll({
+		where: {
+			roomCode: data.roomCode
+		}
+	})
+	const getClients = await models.client.findAll({
+		where: {
+			code: data.roomCode
+		}
+	})
+	getClients.forEach(client => {
+		io.to(client.socket).emit("optionDeleted", { timerStatus: newStatus })
+	})
 }
