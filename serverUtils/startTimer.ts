@@ -1,17 +1,30 @@
 module.exports = async function startTimer(io, models, data) {
-	const { minutes, id, pom } = data
 	let newPom
-	pom === true ? newPom = false : newPom = true
-	const newData = await models.timerStatus.update({
-		minutes: minutes,
+	data.pom === true ? newPom = false : newPom = true
+	await models.timerStatus.update({
+		minutes: data.minutes,
 		seconds: 0,
 		pom: newPom,
 		isRunning: true
 	}, {
 		where: {
-			id: id
+			roomCode: data.roomCode
 		}
 	})
-	const newStatus = await models.timerStatus.findAll()
-	io.emit("timerStarted", { timerStatus: newStatus })
+
+	const newStatus = await models.timerStatus.findAll({
+		where: {
+			roomCode: data.roomCode
+		}
+	})
+
+	const getClients = await models.client.findAll({
+		where: {
+			code: data.roomCode
+		}
+	})
+
+	getClients.forEach(client => {
+		io.to(client.socket).emit("timerStarted", { timerStatus: newStatus })
+	})
 }

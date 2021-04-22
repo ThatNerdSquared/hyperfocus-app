@@ -11,6 +11,9 @@ const cors = require("cors")
 app.use(cors())
 
 // Require utils
+let removeStrayitems = require("../serverUtils/removeStrayItems.ts")
+let beginTimerTick = require("../serverUtils/beginTimerTick.ts")
+
 let socketJoin = require("../serverUtils/socketJoin.ts")
 let newRoom = require("../serverUtils/newRoom.ts")
 let startTimer = require("../serverUtils/startTimer.ts")
@@ -22,99 +25,13 @@ let logMeOut = require("../serverUtils/logMeOut.ts")
 // Get port from environment and store in Express.
 var port = normalizePort(process.env.PORT || '9000');
 app.set('port', port);
-app.listen(5000, async function ticktock() {
-
-	let strayStatuses = await models.timerStatus.findAll({
-		where: {
-			roomCode: null
-		}
-	})
-	strayStatuses.forEach(async status => {
-		await status.destroy()
-	});
-
-	let timerStatus = await models.timerStatus.findAll()
-	if (timerStatus == "") {
-		await models.timerStatus.create({
-			id: 42,
-			roomCode: "ultraYeet",
-			minutes: 0,
-			seconds: 0,
-			pom: false,
-			isRunning: false,
-			isIntervalSet: false,
-			timerOptions: [15, 25, 50, 90],
-			participants: []
-		})
-	}
-
-	let strayClients = await models.client.findAll()
-	strayClients.forEach(async client => {
-		await client.destroy()
-	});
-
-	const data = await models.timerStatus.findAll()
-	const id = data[0].dataValues.id
-		const newData = await models.timerStatus.findAll()
-		io.emit("connectionData", { timerStatus: newData })
-		const timerGoTickTock = setInterval(async () => {
-			const check = await models.timerStatus.findAll({
-				where: {
-					isRunning: false
-				}
-			})
-			if (check == "") {
-				const rawData = await models.timerStatus.findAll()
-				const data = rawData[0].dataValues
-				let min = data.minutes
-				let sec = data.seconds
-				let id = data.id
-				if (min === 0 && sec === 0) {
-					const newData = await models.timerStatus.update({
-						minutes: 0,
-						seconds: 0,
-						isRunning: false,
-					}, {
-						where: {
-							id: id
-						}
-					})
-					const newStatus = await models.timerStatus.findAll()
-					io.emit("timerGoTickTock", { timerStatus: newStatus, pomDone: true })
-				}
-				else {
-					let finalMin
-					let finalSec
-					if (sec-1 < 0) {
-						finalSec = 59
-						finalMin = min - 1
-					}
-					else {
-						finalSec = sec - 1
-						finalMin = min
-					}
-					const newData = await models.timerStatus.update({
-						minutes: finalMin,
-						seconds: finalSec
-					}, {
-						where: {
-							id: id
-						}
-					})
-					const newStatus = await models.timerStatus.findAll()
-					io.emit("timerGoTickTock", { timerStatus: newStatus })
-				}
-			}
-		}, 1000);
-});
+app.listen(5000);
 app.use(express.static(path.join('client/build')));
 app.get('/', (req, res) => {
 	res.sendFile(path.join('client/build', 'index.html'))
 })
 
-/**
- * Create HTTP server.
- */
+// Create HTTP server.
 
 var server = http.createServer(app);
 const io = require("socket.io")(server, {
@@ -123,6 +40,10 @@ const io = require("socket.io")(server, {
 		methods: ["GET", "POST"]
 	}
 });
+
+removeStrayitems(models)
+beginTimerTick(io, models)
+
 io.on("connection", socket => {
 	// MAY BE USEFUL FOR ROOM FEATURE LATER ON
 
