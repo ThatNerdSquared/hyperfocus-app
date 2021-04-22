@@ -1,15 +1,52 @@
-module.exports = async function logMeOut(io, models, user) {
-	if (user[0] === undefined) {
+module.exports = async function logMeOut(io, socket, models, data) {
+	if (data.user === undefined) {
 		return
 	}
-	const userID = user[0].id
+
+	const user = data.user[0]
 	await models.user.update({
 		isOnline: false
 	}, {
 		where: {
-			id: userID
+			id: user.id
 		}
 	})
-	const newUsers = await models.user.findAll()
-	io.emit("userLoggedOut", { users: newUsers })
+
+	const removeClient = await models.client.findAll({
+		where: {
+			socket: socket.id
+		}
+	})
+	removeClient.forEach(async client => {
+		await client.destroy()
+	})
+
+	const getClients = await models.client.findAll({
+		where: {
+			code: data.roomCode
+		}
+	})
+	const newParticipants = []
+	getClients.forEach(client => {
+		if (newParticipants.includes(client.name) === false) {
+			client.name === user.name ? null : newParticipants.push(client.name)
+		}
+	})
+	await models.timerStatus.update({
+		participants: newParticipants
+	}, {
+		where: {
+			roomCode: data.roomCode
+		}
+	})
+
+	const timerStatus = await models.timerStatus.findAll({
+		where: {
+			roomCode: data.roomCode
+		}
+	})
+
+	getClients.forEach(client => {
+		io.to(client.socket).emit("userLoggedOut", { timerStatus: timerStatus })
+	})
 }

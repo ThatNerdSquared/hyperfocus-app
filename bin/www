@@ -48,6 +48,11 @@ app.listen(5000, async function ticktock() {
 		})
 	}
 
+	let strayClients = await models.client.findAll()
+	strayClients.forEach(async client => {
+		await client.destroy()
+	});
+
 	const data = await models.timerStatus.findAll()
 	const id = data[0].dataValues.id
 		const newData = await models.timerStatus.findAll()
@@ -143,8 +148,8 @@ io.on("connection", socket => {
 	socket.on("deleteOption", async data => {
 		deleteOption(io, models, data)
 	})
-	socket.on("logMeOut", async user => {
-		logMeOut(io, models, user)
+	socket.on("logMeOut", async data => {
+		logMeOut(io, socket, models, data)
 	})
 })
 
