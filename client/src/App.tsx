@@ -7,11 +7,12 @@ import ParticipantsList from "./participants/ParticipantsList"
 import Banner from "./assets/hyperfocus-banner.svg"
 import Favicon from "./assets/hyperfocus-favicon.png"
 import { setupBeforeUnloadListener } from "./AutoLogoutUtils"
+import ChimeSound from "./assets/hyperfocus-chime.mp3"
 
 // Uncomment the below for dev.
 let socket: any
 if (process.env.NODE_ENV === 'development') {
-	socket = io("http://192.168.228.111:9000")
+	socket = io("http://127.0.0.1:9000")
 }
 else {
 	socket = io()
@@ -224,6 +225,8 @@ class App extends React.Component<unknown, myState> {
 					icon: Favicon,
 				};
 				new Notification("Hyperfocus", options)
+				let chime = new Audio(ChimeSound)
+				chime.play()
 			}
 		}
 		if (data.currentUser != null) {
