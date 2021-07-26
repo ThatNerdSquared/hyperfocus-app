@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/static/css/main.14aa5896.chunk.css",
+    "main.js": "/static/js/main.bf2a9bcf.chunk.js",
+    "main.js.map": "/static/js/main.bf2a9bcf.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.c012fedc.js",
+    "runtime-main.js.map": "/static/js/runtime-main.c012fedc.js.map",
+    "static/js/2.2ca19668.chunk.js": "/static/js/2.2ca19668.chunk.js",
+    "static/js/2.2ca19668.chunk.js.map": "/static/js/2.2ca19668.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.14aa5896.chunk.css.map": "/static/css/main.14aa5896.chunk.css.map",
+    "static/js/2.2ca19668.chunk.js.LICENSE.txt": "/static/js/2.2ca19668.chunk.js.LICENSE.txt",
+    "static/media/hyperfocus-banner.6d7b49de.svg": "/static/media/hyperfocus-banner.6d7b49de.svg",
+    "static/media/hyperfocus-chime.258cb2f0.mp3": "/static/media/hyperfocus-chime.258cb2f0.mp3",
+    "static/media/hyperfocus-favicon.43629efd.png": "/static/media/hyperfocus-favicon.43629efd.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.c012fedc.js",
+    "static/js/2.2ca19668.chunk.js",
+    "static/css/main.14aa5896.chunk.css",
+    "static/js/main.bf2a9bcf.chunk.js"
+  ]
+}
