@@ -1,7 +1,7 @@
 'use strict'
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		return queryInterface.createTable("hyperfocus-users-db", {
+		return queryInterface.createTable("users", {
 			id: {
 				allowNull: false,
 				primaryKey: true,
@@ -19,10 +19,18 @@ module.exports = {
 			isOnline: {
 				allowNull: false,
 				type: Sequelize.BOOLEAN
+			},
+			createdAt: {
+				allowNull: false,
+				type: Sequelize.DATE
+			},
+			updatedAt: {
+				allowNull: false,
+				type: Sequelize.DATE
 			}
 		})
 	},
 	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable("hyperfocus-users-db");
+		return queryInterface.dropTable("users");
 	}
 }

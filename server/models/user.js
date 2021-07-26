@@ -18,6 +18,14 @@ module.exports = (sequelize, DataTypes) => {
 		isOnline: {
 			allowNull: false,
 			type: DataTypes.BOOLEAN
+		},
+		createdAt: {
+			allowNull: false,
+			type: DataTypes.DATE
+		},
+		updatedAt: {
+			allowNull: false,
+			type: DataTypes.DATE
 		}
 	})
 	return user

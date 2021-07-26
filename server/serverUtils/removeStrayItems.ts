@@ -11,7 +11,6 @@ module.exports = async function removeStrayItems(models) {
 	const timerStatus = await models.timerStatus.findAll()
 	if (timerStatus == "") {
 		await models.timerStatus.create({
-			id: 42,
 			roomCode: "bigTest",
 			minutes: 0,
 			seconds: 0,

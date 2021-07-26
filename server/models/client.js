@@ -13,6 +13,14 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			primaryKey: true,
 			type: DataTypes.STRING
+		},
+		createdAt: {
+			allowNull: false,
+			type: DataTypes.DATE
+		},
+		updatedAt: {
+			allowNull: false,
+			type: DataTypes.DATE
 		}
 	})
 	return client

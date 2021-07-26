@@ -1,6 +1,12 @@
 "use strict"
 module.exports = (sequelize, DataTypes) => {
 	let timerStatus = sequelize.define("timerStatus", {
+		id: {
+			allowNull: false,
+			primaryKey: true,
+			type: DataTypes.UUID,
+			defaultValue: DataTypes.UUIDV4
+		},
 		roomCode: {
 			allowNull: false,
 			type: DataTypes.STRING
@@ -32,6 +38,14 @@ module.exports = (sequelize, DataTypes) => {
 		participants: {
 			allowNull: false,
 			type: DataTypes.ARRAY(DataTypes.STRING)
+		},
+		createdAt: {
+			allowNull: false,
+			type: DataTypes.DATE
+		},
+		updatedAt: {
+			allowNull: false,
+			type: DataTypes.DATE
 		}
 	})
 	return timerStatus
