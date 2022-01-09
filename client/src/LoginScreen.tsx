@@ -48,7 +48,8 @@ function LoginScreen(props: any) {
 				props.roomCreated ? (<p className="happy-text">Your room was created!</p>) : null
 			}
 			<p className="login-text">This is only used to show other participants who you are.</p>
-			<p className="login-text">More advanced room features and login options coming soon!</p>
+			<p className="login-text">Support Hyperfocus by <a href="https://www.buymeacoffee.com/nathanyeung" target="_blank" rel="noopener noreferrer">buying me a coffee!</a></p>
+			<p className="login-text">Find Hyperfocus on <a href="https://github.com/ThatNerdSquared/hyperfocus-app" target="_blank" rel="noopener noreferrer">GitHub</a></p>
 		</div>
 	)
 }
