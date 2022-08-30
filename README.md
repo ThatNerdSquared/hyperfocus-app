@@ -1,5 +1,7 @@
 # Hyperfocus: A New Kind of Timer
 
+### Note: commit [68d517a](https://github.com/ThatNerdSquared/hyperfocus-app/commit/68d517ae6096250db1fc8fb554c0660bf475f520) is the last one before I started overhauling this project - if you'd like to see how this was like during science fair, feel free to browse back to that time (the code's not pretty).
+
 ## What is this?
 Hyperfocus is a collaborative timer. Hop onto the site with some friends, set a timer, and get work done together!
 
