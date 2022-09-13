@@ -36,6 +36,6 @@ jobs:
     - name: Clean install dependencies
       run: cd hf-server && npm ci
     - name: Run tests
-      run: cd hf-server && npm run test:standalone
+      run: cd hf-server && npm run test-standalone
     - name: Run linting
       run: cd hf-server && npm run lint
