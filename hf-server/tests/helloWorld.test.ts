@@ -1,4 +1,4 @@
-import { helloWorld } from "./src/helloWorld"
+import { helloWorld } from "../src/helloWorld"
 
 test("Hello world says hi", () => {
     const res = helloWorld(false)
