@@ -1,8 +1,8 @@
-import {isMobile} from 'react-device-detect';
+// import {isMobile} from 'react-device-detect';
 
 // Setup the `beforeunload` event listener
 export function setupBeforeUnloadListener(logMeOut: any) {
-	if(isMobile) {
+	// if(isMobile) {
 		let hidden, visibilityChange;
 		if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
 			hidden = "hidden";
@@ -15,7 +15,7 @@ export function setupBeforeUnloadListener(logMeOut: any) {
 			visibilityChange = "webkitvisibilitychange";
 		}
 		window.addEventListener(visibilityChange, logMeOut)
-	}
+	// }
 	window.addEventListener('beforeunload', alertUser)
 	window.addEventListener('unload', logMeOut)
 	return () => {
