@@ -21,7 +21,7 @@ jobs:
     - name: Clean install dependencies
       run: cd hf-client && npm ci
     - name: Run linting
-      run: npm run lint
+      run: cd hf-client && npm run lint
   server-test-lint:
     runs-on: ubuntu-latest
     strategy:
@@ -36,6 +36,6 @@ jobs:
     - name: Clean install dependencies
       run: cd hf-server && npm ci
     - name: Run tests
-      run: npm run test:standalone
+      run: cd hf-server && npm run test:standalone
     - name: Run linting
-      run: npm run lint
+      run: cd hf-server && npm run lint
