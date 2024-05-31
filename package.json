@@ -12,5 +12,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ThatNerdSquared",
-  "license": "GPL-3.0-or-later"
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "eslint": "^9.3.0",
+    "prettier": "3.2.5",
+    "typescript": "^5.4.5"
+  }
 }
