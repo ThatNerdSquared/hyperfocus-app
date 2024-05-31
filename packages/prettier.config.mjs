@@ -1,3 +1,4 @@
 export default {
-    tabWidth: 4
+    tabWidth: 4,
+    semi: false
 }

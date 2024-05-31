@@ -1,15 +1,49 @@
-import React from "react"
+import { useState } from "react"
 import Timer from "./timer/Timer"
 import io from "socket.io-client"
-import LoginScreen from "./LoginScreen"
 import NewRoomModal from "./NewRoomModal"
 import ParticipantsList from "./participants/ParticipantsList"
 import Banner from "./assets/hyperfocus-banner.svg"
 import Favicon from "./assets/hyperfocus-favicon.png"
 import { setupBeforeUnloadListener } from "./AutoLogoutUtils"
 import ChimeSound from "./assets/hyperfocus-chime.mp3"
+import LoginView from "./LoginScreen"
+
+function App(): JSX.Element {
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+    const logIn = () => {
+        setIsLoggedIn(true)
+    }
+
+    const toggleRoomModal = () => {
+        console.log("toggle room modal")
+    }
+
+    return (
+        <>
+            {isLoggedIn ? (
+                <TimerView />
+            ) : (
+                <LoginView
+                    loginHandler={logIn}
+                    toggleRoomModal={toggleRoomModal}
+                />
+            )}
+        </>
+    )
+}
+
+function TimerView(): JSX.Element {
+    return (
+        <>
+            <p>Logged in!</p>
+        </>
+    )
+}
 
 // Uncomment the below for dev.
+/*
 let socket: any
 if (process.env.NODE_ENV === 'development') {
 	socket = io("http://127.0.0.1:9000")
@@ -55,7 +89,7 @@ function numDigits(x: number) {
 	return Math.max(Math.floor(Math.log10(Math.abs(x))), 0) + 1;
 }
 
-class App extends React.Component<unknown, myState> {
+class OldApp extends React.Component<unknown, myState> {
 	constructor(props: unknown) {
 		super(props)
 		this.state = {
@@ -83,6 +117,7 @@ class App extends React.Component<unknown, myState> {
 			roomCreated: false,
 			roomDoesNot: false,
 			currentUser: {
+                id: 0,
 				name: "Guest",
 				totalPomsToday: 0,
 				isOnline: true
@@ -368,5 +403,6 @@ class App extends React.Component<unknown, myState> {
 		}
 	}
 }
+*/
 
 export default App
