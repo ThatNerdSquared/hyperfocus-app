@@ -1,0 +1,16 @@
+{
+  "name": "hyperfocus",
+  "version": "1.0.0",
+  "description": "A web-based, collaborative pomodoro timer.",
+  "main": "index.js",
+  "workspaces": [
+    "hf-client",
+    "hf-server",
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ThatNerdSquared",
+  "license": "GPL-3.0-or-later"
+}
