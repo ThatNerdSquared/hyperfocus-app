@@ -18,6 +18,7 @@ function LoginView(props: LoginViewProps) {
     }
 
     const createNewRoom = () => {
+        // TODO: connect createNewRoom to server
         console.log("create new room")
         setFormInputErrors([ValidationMsg.RoomCreated])
     }

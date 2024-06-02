@@ -8,8 +8,6 @@ function Timer(props: {
 	startTimer: Function,
 	id: number,
 	toggleRunning: Function,
-	formChange: Function 
-	newOption: string,
 	handleAddOption: Function,
 	handleDeleteOption: Function,
 	isRunning: boolean
@@ -39,8 +37,6 @@ function Timer(props: {
 			/>
 			<div className="options">{optionComponents}</div>
 			<AddCustomOption
-				newOption={props.newOption}
-				formChange={props.formChange}
 				handleAddOption={props.handleAddOption}
 			/>
 		</div>

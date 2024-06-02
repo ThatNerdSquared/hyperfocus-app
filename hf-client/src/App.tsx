@@ -8,24 +8,18 @@ import Favicon from "./assets/hyperfocus-favicon.png"
 import { setupBeforeUnloadListener } from "./AutoLogoutUtils"
 import ChimeSound from "./assets/hyperfocus-chime.mp3"
 import LoginView from "./views/LoginView"
+import TimerView from "./views/TimerView"
 
 function App(): JSX.Element {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
 
     const logIn = () => {
+        // todo: connect logIn to server
         setIsLoggedIn(true)
     }
 
     return (
         <>{isLoggedIn ? <TimerView /> : <LoginView loginHandler={logIn} />}</>
-    )
-}
-
-function TimerView(): JSX.Element {
-    return (
-        <>
-            <p>Logged in!</p>
-        </>
     )
 }
 
