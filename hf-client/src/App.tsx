@@ -7,30 +7,17 @@ import Banner from "./assets/hyperfocus-banner.svg"
 import Favicon from "./assets/hyperfocus-favicon.png"
 import { setupBeforeUnloadListener } from "./AutoLogoutUtils"
 import ChimeSound from "./assets/hyperfocus-chime.mp3"
-import LoginView from "./LoginScreen"
+import LoginView from "./views/LoginView"
 
 function App(): JSX.Element {
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
 
     const logIn = () => {
         setIsLoggedIn(true)
     }
 
-    const toggleRoomModal = () => {
-        console.log("toggle room modal")
-    }
-
     return (
-        <>
-            {isLoggedIn ? (
-                <TimerView />
-            ) : (
-                <LoginView
-                    loginHandler={logIn}
-                    toggleRoomModal={toggleRoomModal}
-                />
-            )}
-        </>
+        <>{isLoggedIn ? <TimerView /> : <LoginView loginHandler={logIn} />}</>
     )
 }
 
