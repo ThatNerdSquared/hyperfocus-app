@@ -16,31 +16,28 @@ func main() {
 
 func handleAPIRequest(res http.ResponseWriter, req *http.Request) {
 	var pathSegments = strings.Split(req.URL.Path, "/")
+
 	apiVersion := pathSegments[2]
 	api, err := loadAPIVersion(apiVersion)
 	if err != nil {
 		fmt.Println(err)
-        res.WriteHeader(404)
+		res.WriteHeader(404)
 		return
 	}
-	api.ping(res, req)
-}
 
-func loadAPIVersion(v string) (APIVersion, error) {
-	switch v {
-	case "v1":
-		api := V1API{}
-		return api, nil
-	default:
-		return nil, fmt.Errorf("API version %s is invalid!", v)
+	route := ""
+	if len(pathSegments) > 3 {
+		route = pathSegments[3]
 	}
-}
+	routeHandler, err := findRoute(route, req.Method, api)
+	if err != nil {
+		fmt.Println(err)
+		res.WriteHeader(404)
+		return
+	}
 
-type APIVersion interface {
-	ping(res http.ResponseWriter, req *http.Request)
-	handleLogin(res http.ResponseWriter, req *http.Request)
+	routeHandler(res, req)
 }
-
 func rootRequest(res http.ResponseWriter, req *http.Request) {
 	fmt.Println("Root request received!")
 }
