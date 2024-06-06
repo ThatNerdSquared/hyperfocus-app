@@ -1,57 +1,50 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 )
 
 func main() {
 	fmt.Println("Starting up server...")
-	http.HandleFunc("/", rootRequest)
-	http.HandleFunc("/api/", handleAPIRequest)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", Conf.port), nil))
+
+	http.HandleFunc("/", printAndRespond("Root endpoint reached!"))
+	http.HandleFunc("/api/", printAndRespond(
+		"Hyperfocus API reached! Use /api/vX/Y for route Y at API version X. Use /api/versions to view all versions.",
+	))
+	http.HandleFunc("/api/versions", getVersions)
+
+	loadRoutes(1, v1Routes)
+
+	log.Fatal(
+		http.ListenAndServe(fmt.Sprintf(":%d", Conf.port), nil),
+	)
 }
 
-func handleAPIRequest(res http.ResponseWriter, req *http.Request) {
-	var pathSegments = strings.Split(req.URL.Path, "/")
+func printAndRespond(msg string) http.HandlerFunc {
+	return func(res http.ResponseWriter, req *http.Request) {
+		fmt.Println(msg)
+		res.Write([]byte(msg))
+	}
+}
 
-	apiVersion := pathSegments[2]
-	api, err := loadAPIVersion(apiVersion)
+func getVersions(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/json")
+	data, err := json.Marshal([1]int{1})
 	if err != nil {
 		fmt.Println(err)
-		res.WriteHeader(404)
 		return
 	}
-
-	route := ""
-	if len(pathSegments) > 3 {
-		route = pathSegments[3]
-	}
-	routeHandler, err := api(route, req.Method)
-	if err != nil {
-		fmt.Println(err)
-		res.WriteHeader(404)
-		return
-	}
-
-	routeHandler(res, req)
-}
-func rootRequest(res http.ResponseWriter, req *http.Request) {
-	fmt.Println("Root request received!")
+	res.Write(data)
 }
 
-type RouteFinder func(
-	route string,
-	method string,
-) (func(http.ResponseWriter, *http.Request), error)
+type RoutesCatalog map[string]http.HandlerFunc
 
-func loadAPIVersion(v string) (RouteFinder, error) {
-	switch v {
-	case "v1":
-		return findRouteV1, nil
-	default:
-		return nil, fmt.Errorf("API version %s is invalid!", v)
+func loadRoutes(version int, routes RoutesCatalog) {
+	for path, handler := range routes {
+		var fullPath = fmt.Sprintf("/api/v%d/%s", version, path)
+		http.HandleFunc(fullPath, handler)
 	}
 }
