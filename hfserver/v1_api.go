@@ -3,47 +3,58 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/google/UUID"
 )
 
-type V1API struct {
-	test string
+type UserAccount struct {
+	creationDate time.Time
+	id           uuid.UUID
+	username     string
 }
 
-func (api V1API) ping(
-	res http.ResponseWriter,
-	req *http.Request,
-) {
+type Room struct {
+	creationDate time.Time
+	id           uuid.UUID
+	name         string
+	participants []uuid.UUID
+	presets      []int
+}
+
+func ping(res http.ResponseWriter, req *http.Request) {
 	fmt.Println("V1 Hyperfocus API reached!")
 }
 
-func (api V1API) logIn(res http.ResponseWriter, req *http.Request) {
+func logIn(res http.ResponseWriter, req *http.Request) {
 	fmt.Println("Login endpoint reached!")
 }
 
-func (api V1API) createRoom(res http.ResponseWriter, req *http.Request) {
+func createRoom(res http.ResponseWriter, req *http.Request) {
 	fmt.Println("Room creation endpoint reached!")
 }
 
-func (api V1API) rooms(res http.ResponseWriter, req *http.Request) {
+func rooms(res http.ResponseWriter, req *http.Request) {
 	fmt.Println("Getting rooms reached!")
 }
 
-func (api V1API) startTimer(res http.ResponseWriter, req *http.Request) {
-	fmt.Println("Timer start reached!")
-}
-
-func (api V1API) toggleRunning(res http.ResponseWriter, req *http.Request) {
-	fmt.Println("Toggle running reached!")
-}
-
-func (api V1API) addPreset(res http.ResponseWriter, req *http.Request) {
-	fmt.Println("Preset add reached!")
-}
-
-func (api V1API) deletePreset(res http.ResponseWriter, req *http.Request) {
-	fmt.Println("Preset delete reached!")
-}
-
-func (api V1API) presets(res http.ResponseWriter, req *http.Request) {
-	fmt.Println("Getting presets reached!")
+func findRouteV1(
+	r string,
+	method string,
+) (func(http.ResponseWriter, *http.Request), error) {
+	switch r {
+	case "ping":
+		return ping, nil
+	case "login":
+		return logIn, nil
+	case "room":
+		switch method {
+		case "POST":
+			return createRoom, nil
+		default:
+			return rooms, nil
+		}
+	default:
+		return nil, fmt.Errorf("API route %s is invalid!", r)
+	}
 }

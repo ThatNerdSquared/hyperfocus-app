@@ -29,7 +29,7 @@ func handleAPIRequest(res http.ResponseWriter, req *http.Request) {
 	if len(pathSegments) > 3 {
 		route = pathSegments[3]
 	}
-	routeHandler, err := findRoute(route, req.Method, api)
+	routeHandler, err := api(route, req.Method)
 	if err != nil {
 		fmt.Println(err)
 		res.WriteHeader(404)
@@ -40,4 +40,18 @@ func handleAPIRequest(res http.ResponseWriter, req *http.Request) {
 }
 func rootRequest(res http.ResponseWriter, req *http.Request) {
 	fmt.Println("Root request received!")
+}
+
+type RouteFinder func(
+	route string,
+	method string,
+) (func(http.ResponseWriter, *http.Request), error)
+
+func loadAPIVersion(v string) (RouteFinder, error) {
+	switch v {
+	case "v1":
+		return findRouteV1, nil
+	default:
+		return nil, fmt.Errorf("API version %s is invalid!", v)
+	}
 }
