@@ -1,4 +1,5 @@
 export default {
     tabWidth: 4,
-    semi: false
+    semi: false,
+    singleQuote: false
 }

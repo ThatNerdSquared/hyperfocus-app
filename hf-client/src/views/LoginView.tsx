@@ -4,9 +4,11 @@ import { ValidationMsg } from "../validationMsgs"
 import ValidationMsgs from "../components/ValidationMsgs"
 import NewRoomModal from "../NewRoomModal"
 import LoginForm from "../components/LoginForm"
+import { buildAPIUrl } from "../config"
+import { ErrorResponseBody } from "../App"
 
 interface LoginViewProps {
-    loginHandler: () => void
+    loginHandler: (username: string, loginCode: string) => void
 }
 
 function LoginView(props: LoginViewProps) {
@@ -17,9 +19,21 @@ function LoginView(props: LoginViewProps) {
         setNewRoomModalShown(!newRoomModalShown)
     }
 
-    const createNewRoom = () => {
-        // TODO: connect createNewRoom to server
-        console.log("create new room")
+    const createNewRoom = async (roomName: string) => {
+        const res = await fetch(buildAPIUrl("rooms"), {
+            method: "POST",
+            body: JSON.stringify({ roomName: roomName }),
+        })
+        console.log(res)
+        if (!res.ok) {
+            const data: ErrorResponseBody = await res.json()
+            return data.error == "ROOM_ALREADY_EXISTS"
+                ? setFormInputErrors([
+                    ...formInputErrors,
+                    ValidationMsg.RoomAlreadyExists,
+                ])
+                : console.log(res.statusText)
+        }
         setFormInputErrors([ValidationMsg.RoomCreated])
     }
 
@@ -38,7 +52,7 @@ function LoginView(props: LoginViewProps) {
         }
         return inputErrors.length !== 0
             ? setFormInputErrors(inputErrors)
-            : props.loginHandler()
+            : props.loginHandler(username, loginCode)
     }
 
     return (

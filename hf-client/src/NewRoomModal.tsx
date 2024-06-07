@@ -3,7 +3,7 @@ import { ValidationMsg } from "./validationMsgs"
 import ValidationMsgs from "./components/ValidationMsgs"
 
 interface NewRoomModalProps {
-    newRoomHandler: () => void
+    newRoomHandler: (roomName: string) => Promise<void>
     toggleRoomModal: () => void
 }
 
@@ -17,7 +17,7 @@ function NewRoomModal(props: NewRoomModalProps) {
             return setFormInputErrors([ValidationMsg.NoLoginCodeProvided])
         }
         props.toggleRoomModal()
-        return props.newRoomHandler()
+        return props.newRoomHandler(newRoomCode)
     }
 
     return (
