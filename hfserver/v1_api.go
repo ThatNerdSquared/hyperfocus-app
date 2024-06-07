@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -23,22 +24,60 @@ func roomsHandler(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+type LoginBody struct {
+	Username string
+	RoomCode string
+}
+
 func loginRoute(res http.ResponseWriter, req *http.Request) {
-	fmt.Println("Login endpoint reached!")
+	decoder := json.NewDecoder(req.Body)
+	var data LoginBody
+	err := decoder.Decode(&data)
+	if err != nil {
+		fmt.Println("loginRoute JSON decoding error!")
+		res.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	user, err := getUser(data.Username)
+	if err != nil {
+		res.WriteHeader(http.StatusUnprocessableEntity)
+		json.NewEncoder(res).Encode(
+			map[string]string{"error": "USERNAME_INVALID"},
+		)
+		return
+	}
+    fmt.Println(user)
+	json.NewEncoder(res).Encode(user)
+}
+
+type RoomCreationBody struct {
+	RoomName string
 }
 
 func roomCreationRoute(res http.ResponseWriter, req *http.Request) {
+	decoder := json.NewDecoder(req.Body)
+	var data RoomCreationBody
+	err := decoder.Decode(&data)
+	if err != nil {
+		fmt.Println("roomCreationRoute JSON decoding error!")
+		res.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	err = createRoom(data.RoomName)
+	if err != nil {
+		res.WriteHeader(http.StatusUnprocessableEntity)
+		json.NewEncoder(res).Encode(
+			map[string]string{"error": "ROOM_ALREADY_EXISTS"},
+		)
+		return
+	}
 	fmt.Println("Room creation endpoint reached!")
 }
 
 func roomsRoute(res http.ResponseWriter, req *http.Request) {
 	fmt.Println("Getting rooms reached!")
-}
-
-type UserAccount struct {
-	creationDate time.Time
-	id           uuid.UUID
-	username     string
 }
 
 type Room struct {
